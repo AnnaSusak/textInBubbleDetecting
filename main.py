@@ -31,7 +31,7 @@ project = rf.workspace().project("manwgaspeechbubble")
 model = project.version(1).model
 
 def predicter(path):
-    result = model.predict(path, confidence=40, overlap=30).json()
+    result = model.predict(path, confidence=70, overlap=30).json()
     predictions = [(pred['x'], pred['y'], pred['width'], pred['height'], pred['confidence']) for pred in
                    result['predictions']]
 
@@ -40,7 +40,7 @@ def predicter(path):
 
     tasks = []
     for i, (x, y, width, height, confidence) in enumerate(predictions):
-        if confidence > 0.5:
+        if confidence >= 0.7:
             # Calculate the bounding box coordinates
             x1 = int(x - width / 2)
             y1 = int(y - height / 2)
