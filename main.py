@@ -1,9 +1,13 @@
+import asyncio
+
 from flask import Flask, render_template, request, send_file
 from werkzeug.utils import secure_filename
 import os
 from roboflow import Roboflow
 import supervision as sv
 import cv2
+
+import test
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -30,7 +34,7 @@ def predicter(path):
     # Load the image
     image = cv2.imread(path)
 
-    # Process each prediction
+    tasks = []
     for i, (x, y, width, height, confidence) in enumerate(predictions):
         if confidence > 0.5:
             # Calculate the bounding box coordinates
@@ -41,11 +45,15 @@ def predicter(path):
 
             # Crop the bubble from the image
             bubble = image[y1:y2, x1:x2]
-
+            tasks.append(test.process_bubble(bubble))
             # Save the cropped bubble image
-            bubble_path = os.path.join(app.config['BUBBLES_FOLDER'], f'bubble_{i}.jpg')
-            cv2.imwrite(bubble_path, bubble)
-
+            # bubble_path = os.path.join(app.config['BUBBLES_FOLDER'], f'bubble_{i}.jpg')
+            # cv2.imwrite(bubble_path, bubble)
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    results = loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
+    loop.close()
+    print(results)
     return predictions
 
 
