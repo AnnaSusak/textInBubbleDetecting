@@ -73,3 +73,11 @@ background-color:#C5DBF0;
 .select2{
 background-color:#9ACCFB;
 }
+ a {
+    color: black;
+    text-decoration: none;
+}
+div{
+border-radius: 15px;
+padding:5px;
+}

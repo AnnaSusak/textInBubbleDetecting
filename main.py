@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import os
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = 'images1'
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -27,10 +27,11 @@ def upload():
     if file:
         filename = secure_filename(file.filename)
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return render_template('uploaded.html', filename=filename)
+        print(filename)
+        return render_template('uploaded.html', filename=filename, lasso="lasso.png")
 
 
-@app.route('/uploads/<filename>')
+@app.route('/images1/<filename>')
 def send_image(filename):
     return send_file(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 

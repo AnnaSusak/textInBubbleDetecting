@@ -6,11 +6,11 @@
 </head>
 <body>
 <div id="all">
-    <img src="../img/lasso.jpg"/>
+
     <div class="up-menu">
-        <button class="icon-btn" id="lasso"></button>
-        <button class="icon-btn" id="pencil"></button>
-        <button class="icon-btn" id="text-btn"></button>
+        <img src="/images1/lasso.png" alt="лассо">
+        <img src="/images1/pencil.png" alt="карандаш">
+        <img src="/images1/text.png" alt="текст">
     </div>
     <div id="menu-and-picture">
         <div class="translation-menu">
@@ -42,22 +42,22 @@
             </div>
         </div>
         <div id="picture-download">
-            <img src="/uploads/{{ filename }}" alt="Uploaded Image">
-            <button class="button"><a href="/uploads/{{ filename }}">Загрузить</a></button>
+            <img src="/images1/{{ filename }}" alt="Uploaded Image">
+            <button class="button"><a href="/images1/{{ filename }}">Загрузить</a></button>
         </div>
         <div class="text-menu">
             <div>
                 <select name="fonts" id="fonts-select" class="select2">
-                    <option value="Times New Roman">English</option>
-                    <option value="Arial">Japanese</option>
-                    <option value="Comic Sans">Russian</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Comic Sans">Comic Sans</option>
                 </select>
             </div>
             <div>
                 <select name="types" id="types-select" class="select2">
-                    <option value="Regular">English</option>
-                    <option value="Bold">Japanese</option>
-                    <option value="Thick">Russian</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Bold">Bold</option>
+                    <option value="Thick">Thick</option>
                 </select>
             </div>
             <div>
