@@ -6,67 +6,76 @@
 </head>
 <body>
 <div id="all">
+    <img src="../img/lasso.jpg"/>
     <div class="up-menu">
-        <button>лассо</button>
-        <button>карандаш</button>
-        <button>текст</button>
+        <button class="icon-btn" id="lasso"></button>
+        <button class="icon-btn" id="pencil"></button>
+        <button class="icon-btn" id="text-btn"></button>
     </div>
-<div id="menu-and-picture">
-    <div class="translation-menu">
-    <div>
-        <select name="models" id="model-select">
-      <option value="google_translate">Google переводчик</option>
-      <option value="test1">тест1</option>
-      <option value="test2">тест2</option>
-    </select>
+    <div id="menu-and-picture">
+        <div class="translation-menu">
+            <div>
+                <select class="select1" name="models" id="model-select">
+                    <option value="google_translate">Google переводчик</option>
+                    <option value="test1">тест1</option>
+                    <option value="test2">тест2</option>
+                </select>
+            </div>
+            <div>
+                <select class="select1" name="languages" id="start-language-select">
+                    <option value="English">English</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Russian">Russian</option>
+                </select>
+            </div>
+            <div><textarea readonly="readonly"></textarea></div>
+            <div>
+                <select class="select1" name="languages2" id="end-language-select">
+                    <option value="English">English</option>
+                    <option value="Japanese">Japanese</option>
+                    <option value="Russian">Russian</option>
+                </select>
+            </div>
+            <div><textarea readonly="readonly"></textarea></div>
+            <div>
+                <button class="button">Перевести</button>
+            </div>
+        </div>
+        <div id="picture-download">
+            <img src="/uploads/{{ filename }}" alt="Uploaded Image">
+            <button class="button"><a href="/uploads/{{ filename }}">Загрузить</a></button>
+        </div>
+        <div class="text-menu">
+            <div>
+                <select name="fonts" id="fonts-select" class="select2">
+                    <option value="Times New Roman">English</option>
+                    <option value="Arial">Japanese</option>
+                    <option value="Comic Sans">Russian</option>
+                </select>
+            </div>
+            <div>
+                <select name="types" id="types-select" class="select2">
+                    <option value="Regular">English</option>
+                    <option value="Bold">Japanese</option>
+                    <option value="Thick">Russian</option>
+                </select>
+            </div>
+            <div>
+                <select name="fontsize" id="fontsize-select" class="select2">
+                    <option value="10">10</option>
+                    <option value="12">12</option>
+                    <option value="14">14</option>
+                    <option value="16">16</option>
+                    <option value="18">18</option>
+                    <option value="20">20</option>
+                    <option value="22">22</option>
+                    <option value="24">24</option>
+                </select>
+            </div>
+            <div>тут будет выбор выравнивания</div>
+        </div>
     </div>
-    <div>
-        <select name="languages" id="start-language-select">
-      <option value="English">English</option>
-      <option value="Japanese">Japanese</option>
-      <option value="Russian">Russian</option>
-    </select>
-    </div>
-    <div><textarea readonly="readonly"></textarea></div>
-    <div>
-        <select name="languages2" id="end-language-select">
-      <option value="English">English</option>
-      <option value="Japanese">Japanese</option>
-      <option value="Russian">Russian</option>
-    </select>
-    </div>
-    <div><textarea readonly="readonly"></textarea></div>
-    <div><button content="Translate"></button></div>
 </div>
-    <div>
-        <img src="/uploads/{{ filename }}" alt="Uploaded Image">
-        <a href="/uploads/{{ filename }}" download>Download Image</a>
-    </div>
-    <div class="text-menu">
-    <div>
-        <select name="fonts" id="fonts-select">
-      <option value="Times New Roman">English</option>
-      <option value="Arial">Japanese</option>
-      <option value="Comic Sans">Russian</option>
-    </select>
-    </div>
-    <div>
-        <select name="types" id="types-select">
-      <option value="Regular">English</option>
-      <option value="Bold">Japanese</option>
-      <option value="Thick">Russian</option>
-    </select>
-    </div>
-    <div>тут будет выбор размера</div>
-    <div>тут будет выбор цвета</div>
-    <div>тут будет выбор выравнивания</div>
-</div>
-</div>
-</div>
-
-
-
-
 
 
 </body>
