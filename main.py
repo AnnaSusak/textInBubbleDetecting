@@ -1,18 +1,19 @@
 import asyncio
 from PIL import Image, ImageDraw
-from flask import Flask, render_template, request, send_file, url_for
+from flask import Flask, render_template, request, send_file, url_for, jsonify
 from werkzeug.utils import secure_filename
 import os
 from roboflow import Roboflow
 import supervision as sv
 import cv2
 import bubbler
+from google.cloud import translate_v2 as translate
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['BUBBLES_FOLDER'] = 'bubbles'
 app.config['TEMP_FOLDER'] = 'temp'
-
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'lithe-willow-428116-r5-8fb0a06a023f.json'
 # Ensure the upload and bubbles directories exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -53,8 +54,10 @@ def predicter(path):
     asyncio.set_event_loop(loop)
     results = loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
     loop.close()
-    print("BUBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+    while None in results:
+        results.remove(None)
     for i, result in enumerate(results):
+        print("RESULT", result)
         bubble_info = create_overlays_for_bubble(result[0], str(i))
         for j, coord in enumerate(result[0]):
             coord.append(bubble_info[j]['filename'])
@@ -86,7 +89,7 @@ def upload():
         return render_template('uploaded.html', filename=filename, bubbles=bubbles)
 
 def create_overlays_for_bubble(coordinates, bubble_name):
-
+    print("COORDINATES", coordinates)
     overlay_filenames = []
 
     if not os.path.exists(app.config['TEMP_FOLDER']):
@@ -110,6 +113,23 @@ def send_uploaded_file(filename):
 @app.route('/temp/<filename>')
 def send_temp_file(filename):
     return send_file(os.path.join(app.config['TEMP_FOLDER'], filename))
+
+translate_client = translate.Client()
+
+
+@app.route('/translate', methods=['POST'])
+def translate():
+    engine = request.args.get('engine')
+    from_lang = request.args.get('from')
+    to_lang = request.args.get('to')
+    data = request.get_json()
+    text = data.get('text')
+
+    if engine == 'google_translate':
+        result = translate_client.translate(text, source_language=from_lang, target_language=to_lang)
+        return jsonify({'translation': result['translatedText']})
+
+    return jsonify({'error': 'Unsupported translation engine'}), 400
 
 if __name__ == '__main__':
     app.run(debug=True)

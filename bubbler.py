@@ -39,18 +39,19 @@ async def process_bubble(bubble, a):
     # Вызов функции распознавания текста
     response = client.text_detection(image=image)
     if not response.text_annotations:
-        return [(0, 0), (0, 0)], "", ""
+        print("ERROR", polygon)
+        return None
     text_annotation = response.text_annotations[0]
     description = text_annotation.description
-    # vertices = text_annotation.bounding_poly.vertices
-    # minx = 1000
-    # miny = 1000
-    # maxx = -1000
-    # maxy = -1000
-    # for vertex in vertices:
-    #     minx = min(minx, vertex.x)
-    #     miny = min(miny, vertex.y)
-    #     maxx = max(maxx, vertex.x)
-    #     maxy = max(maxy, vertex.y)
-    # polygon = [[(minx + a[0], miny + a[1]), (maxx + a[0], maxy + a[1])]]
-    return polygon, description, text_annotation.locale
+    vertices = text_annotation.bounding_poly.vertices
+    minx = 1000
+    miny = 1000
+    maxx = -1000
+    maxy = -1000
+    for vertex in vertices:
+        minx = min(minx, vertex.x)
+        miny = min(miny, vertex.y)
+        maxx = max(maxx, vertex.x)
+        maxy = max(maxy, vertex.y)
+    polygon2 = [(minx + a[0], miny + a[1]), (maxx + a[0], maxy + a[1])]
+    return polygon, description, text_annotation.locale, polygon2

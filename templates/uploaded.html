@@ -27,7 +27,7 @@
                     <option value="Russian">Russian</option>
                 </select>
             </div>
-            <div><textarea readonly="readonly"></textarea></div>
+            <div><textarea id="source-text" readonly="readonly"></textarea></div>
             <div>
                 <select class="select1" name="languages2" id="end-language-select">
                     <option value="English">English</option>
@@ -35,9 +35,9 @@
                     <option value="Russian">Russian</option>
                 </select>
             </div>
-            <div><textarea readonly="readonly"></textarea></div>
+            <div><textarea id="translated-text" readonly="readonly"></textarea></div>
             <div>
-                <button class="button">Перевести</button>
+                <button class="button" id="translate-button">Перевести</button>
             </div>
         </div>
         <div id="picture-download" style="position: relative;">
@@ -48,16 +48,16 @@
         <div class="text-menu">
             <div>
                 <select name="fonts" id="fonts-select" class="select2">
-                    <option value="Times New Roman">English</option>
-                    <option value="Arial">Japanese</option>
-                    <option value="Comic Sans">Russian</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Comic Sans">Comic Sans</option>
                 </select>
             </div>
             <div>
                 <select name="types" id="types-select" class="select2">
-                    <option value="Regular">English</option>
-                    <option value="Bold">Japanese</option>
-                    <option value="Thick">Russian</option>
+                    <option value="Regular">Regular</option>
+                    <option value="Bold">Bold</option>
+                    <option value="Thick">Thick</option>
                 </select>
             </div>
             <div>
@@ -83,6 +83,19 @@
         const originalImage = document.getElementById('original-image');
         const overlaysContainer = document.getElementById('bubble-overlays');
 
+        const sourceText = document.getElementById('source-text');
+        const translatedText = document.getElementById('translated-text');
+        const modelSelect = document.getElementById('model-select');
+        const startLanguageSelect = document.getElementById('start-language-select');
+        const endLanguageSelect = document.getElementById('end-language-select');
+        const translateButton = document.getElementById('translate-button');
+
+        const languageMap = {
+            'English': 'en',
+            'Japanese': 'ja',
+            'Russian': 'ru'
+        };
+
         originalImage.onload = function () {
             const imageRect = originalImage.getBoundingClientRect();
             const containerRect = overlaysContainer.getBoundingClientRect();
@@ -98,11 +111,6 @@
                 bubbleDiv.style.position = 'absolute';
                 bubbleDiv.style.pointerEvents = 'none';
 
-                const bubbleInfo = document.createElement('div');
-                bubbleInfo.style.display = 'none';
-                bubbleInfo.innerHTML = `Description: ${bubble[1]}<br>Locale: ${bubble[2]}`;
-                bubbleDiv.appendChild(bubbleInfo);
-
                 bubble[0].forEach((fill, fillIndex) => {
                     const fillImg = document.createElement('img');
                     fillImg.src = '/temp/' + fill[2];
@@ -114,8 +122,104 @@
                     bubbleDiv.appendChild(fillImg);
                 });
 
+                // Check if bubble[3] exists and create hitbox
+                if (bubble[3] && bubble[3].length === 2) {
+                    const hitbox = document.createElement('div');
+                    hitbox.className = 'hitbox';
+                    hitbox.style.left = `${(bubble[3][0][0] * scaleX) + (imageRect.left - containerRect.left)}px`;
+                    hitbox.style.top = `${(bubble[3][0][1] * scaleY) + (imageRect.top - containerRect.top)}px`;
+                    hitbox.style.width = `${(bubble[3][1][0] - bubble[3][0][0]) * scaleX}px`;
+                    hitbox.style.height = `${(bubble[3][1][1] - bubble[3][0][1]) * scaleY}px`;
+                    hitbox.dataset.selected = 'false';
+                    hitbox.dataset.locale = bubble[2];
+                    hitbox.dataset.description = bubble[1];
+                    hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
+                    bubbleDiv.appendChild(hitbox);
+
+                    hitbox.addEventListener('mouseenter', function () {
+                        if (hitbox.dataset.selected !== 'true') {
+                            hitbox.style.backgroundColor = 'rgba(75, 156, 211, 0.6)'; // Lighter blue
+                        }
+                    });
+
+                    hitbox.addEventListener('mouseleave', function () {
+                        if (hitbox.dataset.selected !== 'true') {
+                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                        }
+                    });
+                }
+
                 overlaysContainer.appendChild(bubbleDiv);
             });
+
+            document.addEventListener('click', function (event) {
+                let hitboxClicked = false;
+
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.contains(event.target)) {
+                        hitboxClicked = true;
+                        if (hitbox.dataset.selected === 'true') {
+                            hitbox.dataset.selected = 'false';
+                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                        } else {
+                            document.querySelectorAll('.hitbox').forEach(hb => {
+                                hb.dataset.selected = 'false';
+                                hb.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                            });
+                            hitbox.dataset.selected = 'true';
+                            hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
+                            updateTranslationMenu(hitbox);
+                        }
+                    } else {
+                        hitbox.dataset.selected = 'false';
+                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                    }
+                });
+
+                if (!hitboxClicked) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.dataset.selected = 'false';
+                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                    });
+                }
+            });
+
+            function updateTranslationMenu(hitbox) {
+                sourceText.value = hitbox.dataset.description;
+                startLanguageSelect.value = hitbox.dataset.locale;
+                translateText();
+            }
+
+            function translateText() {
+                const text = sourceText.value.trim();
+                const fromLang = languageMap[startLanguageSelect.value];
+                const toLang = languageMap[endLanguageSelect.value];
+                const engine = modelSelect.value;
+
+                fetch(`/translate?engine=${engine}&from=${fromLang}&to=${toLang}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    translatedText.value = data.translation;
+
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        if (hitbox.dataset.selected === 'true') {
+                            hitbox.dataset.description = data.translation;
+                            hitbox.dataset.locale = endLanguageSelect.value;
+                            hitbox.querySelector('.hitbox-text').textContent = data.translation;
+                        }
+                    });
+                });
+            }
+
+            sourceText.addEventListener('input', translateText);
+
+            translateButton.addEventListener('click', translateText);
         };
 
         if (originalImage.complete) {
@@ -129,8 +233,31 @@
         position: relative;
     }
 
-    #bubble-overlays img {
-        max-width: none; /* Prevent images from resizing based on container */
+    .hitbox {
+        position: absolute;
+        border: 2px solid transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        cursor: pointer;
+    }
+
+    .hitbox[data-selected="true"] {
+        background-color: #4b9cd3; /* Darker blue */
+        border: 2px solid blue;
+    }
+
+    .hitbox-text {
+        color: #000000; /* White text */
+        text-align: center;
+        word-wrap: break-word;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 5px;
     }
 
     #original-image {
