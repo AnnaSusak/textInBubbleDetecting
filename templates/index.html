@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
+<link rel="stylesheet" href="static/style.css">
 <head>
     <title>Upload Image</title>
 </head>
 <body>
     <h1>Upload an Image</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Upload">
+    <form action="/upload" method="post" enctype="multipart/form-data" >
+        <input type="file" name="file" class="button">
+        <input type="submit" value="Upload" class="button">
     </form>
 </body>
 </html>
