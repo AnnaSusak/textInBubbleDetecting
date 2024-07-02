@@ -1,0 +1,37 @@
+/* Стиль для фона */
+body {
+  background-color: #1E2576; /* Цвет фона */
+}
+#all{
+display:vertical;
+align-items:center;
+justify-content:center;
+}
+#menu-and-picture{
+display:flex;
+align-items:center;
+justify-content:center;
+}
+.translation-menu{
+background-color: #6773F7;
+}
+.up-menu{
+background-color:#3CF3AC;
+
+}
+.text-menu{
+background-color:#7C7CD5;
+}
+/* Стиль для кнопки */
+.button {
+  background-color: #9ACCFB; /* Цвет кнопки */
+  border: none; /* Убираем границу кнопки */
+  color: white; /* Цвет текста на кнопке */
+  padding: 15px 32px; /* Отступы внутри кнопки */
+  text-align: center; /* Выравнивание текста по центру */
+  text-decoration: none; /* Убираем подчеркивание у ссылок */
+  display: inline-block;
+  font-size: 16px; /* Размер шрифта */
+  margin: 4px 2px; /* Внешние отступы кнопки */
+  cursor: pointer; /* Изменение курсора при наведении на кнопку */
+}
