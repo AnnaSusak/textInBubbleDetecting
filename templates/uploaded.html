@@ -6,7 +6,6 @@
 </head>
 <body>
 <div id="all">
-<!--    <img src="static/lasso.png"/>-->
     <div class="up-menu">
         <button class="icon-btn" id="lasso"></button>
         <button class="icon-btn" id="pencil"></button>
@@ -41,9 +40,10 @@
                 <button class="button">Перевести</button>
             </div>
         </div>
-        <div id="picture-download">
+        <div id="picture-download" style="position: relative;">
             <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
             <button class="button"><a href="{{ url_for('send_uploaded_file', filename=filename) }}">Загрузить</a></button>
+            <div id="bubble-overlays" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
         </div>
         <div class="text-menu">
             <div>
@@ -78,23 +78,50 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-            const overlays = {{ overlays | tojson }};
-            const originalImage = document.getElementById('original-image');
+    document.addEventListener('DOMContentLoaded', function () {
+        const bubbles = {{ bubbles|tojson }};
+        const originalImage = document.getElementById('original-image');
+        const overlaysContainer = document.getElementById('bubble-overlays');
 
-            overlays.forEach((overlay) => {
-                const img = new Image();
-                img.src = "{{ url_for('send_temp_file', filename='') }}" + overlay.filename;
-                img.classList.add('overlay');
-                img.style.position = 'absolute';
-                img.style.left = overlay.coords[0][0] + 'px';
-                img.style.top = overlay.coords[0][1] + 'px';
-                img.style.width = (overlay.coords[1][0] - overlay.coords[0][0]) + 'px';
-                img.style.height = (overlay.coords[1][1] - overlay.coords[0][1]) + 'px';
-                originalImage.appendChild(img);
+        originalImage.onload = function () {
+            const imageRect = originalImage.getBoundingClientRect();
+            const containerRect = overlaysContainer.getBoundingClientRect();
+            const naturalWidth = originalImage.naturalWidth;
+            const naturalHeight = originalImage.naturalHeight;
+
+            const scaleX = imageRect.width / naturalWidth;
+            const scaleY = imageRect.height / naturalHeight;
+
+            bubbles.forEach((bubble, index) => {
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.id = `bubble-${index}`;
+                bubbleDiv.style.position = 'absolute';
+                bubbleDiv.style.pointerEvents = 'none';
+
+                const bubbleInfo = document.createElement('div');
+                bubbleInfo.style.display = 'none';
+                bubbleInfo.innerHTML = `Description: ${bubble[1]}<br>Locale: ${bubble[2]}`;
+                bubbleDiv.appendChild(bubbleInfo);
+
+                bubble[0].forEach((fill, fillIndex) => {
+                    const fillImg = document.createElement('img');
+                    fillImg.src = '/temp/' + fill[2];
+                    fillImg.style.position = 'absolute';
+                    fillImg.style.left = `${(fill[0][0] * scaleX) + (imageRect.left - containerRect.left)}px`;
+                    fillImg.style.top = `${(fill[0][1] * scaleY) + (imageRect.top - containerRect.top)}px`;
+                    fillImg.style.width = `${(fill[1][0] - fill[0][0]) * scaleX}px`;
+                    fillImg.style.height = `${(fill[1][1] - fill[0][1]) * scaleY}px`;
+                    bubbleDiv.appendChild(fillImg);
+                });
+
+                overlaysContainer.appendChild(bubbleDiv);
             });
-        });
+        };
 
+        if (originalImage.complete) {
+            originalImage.onload();
+        }
+    });
 </script>
 
 <style>
@@ -102,11 +129,14 @@
         position: relative;
     }
 
-    .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        pointer-events: none;
+    #bubble-overlays img {
+        max-width: none; /* Prevent images from resizing based on container */
+    }
+
+    #original-image {
+        display: block;
+        max-width: 100%;
+        z-index: 5;
     }
 </style>
 </body>

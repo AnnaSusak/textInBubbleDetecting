@@ -6,7 +6,7 @@ import os
 from roboflow import Roboflow
 import supervision as sv
 import cv2
-import test
+import bubbler
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -48,11 +48,19 @@ def predicter(path):
 
             # Crop the bubble from the image
             bubble = image[y1:y2, x1:x2]
-            tasks.append(test.process_bubble(bubble, (x1, y1)))
+            tasks.append(bubbler.process_bubble(bubble, (x1, y1)))
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     results = loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
     loop.close()
+    print("BUBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+    for i, result in enumerate(results):
+        bubble_info = create_overlays_for_bubble(result[0], str(i))
+        for j, coord in enumerate(result[0]):
+            coord.append(bubble_info[j]['filename'])
+            result[0][j] = coord
+        print(result)
+        results[i] = result
     return results
 
 @app.route('/')
@@ -73,22 +81,22 @@ def upload():
         filename = secure_filename(file.filename)
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
-        results = predicter(path)
-        overlays = create_overlays(results, path, filename)
-        print(overlays)
-        return render_template('uploaded.html', filename=filename, overlays=overlays)
+        bubbles = predicter(path)
+        print(bubbles)
+        return render_template('uploaded.html', filename=filename, bubbles=bubbles)
 
-def create_overlays(results, image_path, original_filename):
-    img = Image.open(image_path)
+def create_overlays_for_bubble(coordinates, bubble_name):
+
     overlay_filenames = []
 
     if not os.path.exists(app.config['TEMP_FOLDER']):
         os.makedirs(app.config['TEMP_FOLDER'])
 
-    for i, (coords, text, lang) in enumerate(results):
+    for i, coords in enumerate(coordinates):
+        coords = [(int(x), int(y)) for x, y in coords]
         print(coords)
         overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (255, 255, 255, 255))
-        overlay_filename = f"{os.path.splitext(original_filename)[0]}_overlay_{i}.png"
+        overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
         overlay.save(overlay_path)
         overlay_filenames.append({'filename': overlay_filename, 'coords': coords})
