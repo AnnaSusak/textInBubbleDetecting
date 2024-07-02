@@ -40,16 +40,14 @@ def predicter(path):
 
     tasks = []
     for i, (x, y, width, height, confidence) in enumerate(predictions):
-        if confidence >= 0.7:
-            # Calculate the bounding box coordinates
-            x1 = int(x - width / 2)
-            y1 = int(y - height / 2)
-            x2 = int(x + width / 2)
-            y2 = int(y + height / 2)
+        x1 = int(x - width / 2)
+        y1 = int(y - height / 2)
+        x2 = int(x + width / 2)
+        y2 = int(y + height / 2)
 
-            # Crop the bubble from the image
-            bubble = image[y1:y2, x1:x2]
-            tasks.append(bubbler.process_bubble(bubble, (x1, y1)))
+        # Crop the bubble from the image
+        bubble = image[y1:y2, x1:x2]
+        tasks.append(bubbler.process_bubble(bubble, (x1, y1)))
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     results = loop.run_until_complete(asyncio.gather(*tasks, return_exceptions=True))
