@@ -12,7 +12,22 @@ justify-content:center;
 display:vertical;
 align-items:center;
 justify-content:center;
+position: relative;
 }
+
+#original-image {
+    position: relative; /* обязательно должен быть position: relative; */
+    z-index: 1; /* устанавливаем z-index, например, 1 */
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 2; /* устанавливаем z-index выше, например, 2 */
+}
+
 #menu-and-picture{
 display:flex;
 align-items:center;

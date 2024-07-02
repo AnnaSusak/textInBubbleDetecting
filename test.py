@@ -21,7 +21,7 @@ font_path = 'arial.ttf'  # путь к файлу шрифта
 font_size = 24
 
 # Обработка изображений
-async def process_bubble(bubble):
+async def process_bubble(bubble, a):
     _, bubble_bytes = cv2.imencode('.jpg', bubble)
     content = bubble_bytes.tobytes()
     # Создание объекта Image для Google Vision API
@@ -34,5 +34,14 @@ async def process_bubble(bubble):
     text_annotation = response.text_annotations[0]
     description = text_annotation.description
     vertices = text_annotation.bounding_poly.vertices
-    polygon = [(vertex.x, vertex.y) for vertex in vertices]
+    minx = 1000
+    miny = 1000
+    maxx = -1000
+    maxy = -1000
+    for vertex in vertices:
+        minx = min(minx, vertex.x)
+        miny = min(miny, vertex.y)
+        maxx = max(maxx, vertex.x)
+        maxy = max(maxy, vertex.y)
+    polygon = [(minx + a[0], miny + a[1]), (maxx + a[0], maxx + a[1])]
     return polygon, description, text_annotation.locale

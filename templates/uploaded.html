@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
-<link rel="stylesheet" href="static/style.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <head>
     <title>Uploaded Image</title>
 </head>
 <body>
 <div id="all">
-    <img src="static/lasso.png"/>
+<!--    <img src="static/lasso.png"/>-->
     <div class="up-menu">
         <button class="icon-btn" id="lasso"></button>
         <button class="icon-btn" id="pencil"></button>
@@ -42,8 +42,8 @@
             </div>
         </div>
         <div id="picture-download">
-            <img src="/uploads/{{ filename }}" alt="Uploaded Image">
-            <button class="button"><a href="/uploads/{{ filename }}">Загрузить</a></button>
+            <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
+            <button class="button"><a href="{{ url_for('send_uploaded_file', filename=filename) }}">Загрузить</a></button>
         </div>
         <div class="text-menu">
             <div>
@@ -77,6 +77,37 @@
     </div>
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+            const overlays = {{ overlays | tojson }};
+            const originalImage = document.getElementById('original-image');
 
+            overlays.forEach((overlay) => {
+                const img = new Image();
+                img.src = "{{ url_for('send_temp_file', filename='') }}" + overlay.filename;
+                img.classList.add('overlay');
+                img.style.position = 'absolute';
+                img.style.left = overlay.coords[0][0] + 'px';
+                img.style.top = overlay.coords[0][1] + 'px';
+                img.style.width = (overlay.coords[1][0] - overlay.coords[0][0]) + 'px';
+                img.style.height = (overlay.coords[1][1] - overlay.coords[0][1]) + 'px';
+                originalImage.appendChild(img);
+            });
+        });
+
+</script>
+
+<style>
+    #all {
+        position: relative;
+    }
+
+    .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+    }
+</style>
 </body>
 </html>
