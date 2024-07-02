@@ -22,20 +22,20 @@
             </div>
             <div>
                 <select class="select1" name="languages" id="start-language-select">
-                    <option value="English">English</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Russian">Russian</option>
+                    <option value="en">English</option>
+                    <option value="jp">Japanese</option>
+                    <option value="ru">Russian</option>
                 </select>
             </div>
-            <div><textarea id="source-text" readonly="readonly"></textarea></div>
+            <div><textarea id="source-text"></textarea></div>
             <div>
                 <select class="select1" name="languages2" id="end-language-select">
-                    <option value="English">English</option>
-                    <option value="Japanese">Japanese</option>
-                    <option value="Russian">Russian</option>
+                    <option value="en">English</option>
+                    <option value="jp">Japanese</option>
+                    <option value="ru">Russian</option>
                 </select>
             </div>
-            <div><textarea id="translated-text" readonly="readonly"></textarea></div>
+            <div><textarea id="translated-text"></textarea></div>
             <div>
                 <button class="button" id="translate-button">Перевести</button>
             </div>
@@ -90,12 +90,6 @@
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
 
-        const languageMap = {
-            'English': 'en',
-            'Japanese': 'ja',
-            'Russian': 'ru'
-        };
-
         originalImage.onload = function () {
             const imageRect = originalImage.getBoundingClientRect();
             const containerRect = overlaysContainer.getBoundingClientRect();
@@ -144,7 +138,7 @@
 
                     hitbox.addEventListener('mouseleave', function () {
                         if (hitbox.dataset.selected !== 'true') {
-                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                         }
                     });
                 }
@@ -153,6 +147,8 @@
             });
 
             document.addEventListener('click', function (event) {
+                const imageRect = originalImage.getBoundingClientRect();
+                if(event.clientX >= imageRect.left && event.clientX <= imageRect.right && event.clientY >= imageRect.top && event.clientY <= imageRect.bottom){
                 let hitboxClicked = false;
 
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
@@ -160,11 +156,11 @@
                         hitboxClicked = true;
                         if (hitbox.dataset.selected === 'true') {
                             hitbox.dataset.selected = 'false';
-                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                            hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                         } else {
                             document.querySelectorAll('.hitbox').forEach(hb => {
                                 hb.dataset.selected = 'false';
-                                hb.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                                hb.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                             });
                             hitbox.dataset.selected = 'true';
                             hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
@@ -172,15 +168,16 @@
                         }
                     } else {
                         hitbox.dataset.selected = 'false';
-                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                     }
                 });
 
                 if (!hitboxClicked) {
                     document.querySelectorAll('.hitbox').forEach(hitbox => {
                         hitbox.dataset.selected = 'false';
-                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
+                        hitbox.style.backgroundColor = 'rgba(0, 0, 0, 0)';
                     });
+                }
                 }
             });
 
@@ -192,8 +189,8 @@
 
             function translateText() {
                 const text = sourceText.value.trim();
-                const fromLang = languageMap[startLanguageSelect.value];
-                const toLang = languageMap[endLanguageSelect.value];
+                const fromLang = startLanguageSelect.value;
+                const toLang = endLanguageSelect.value;
                 const engine = modelSelect.value;
 
                 fetch(`/translate?engine=${engine}&from=${fromLang}&to=${toLang}`, {
@@ -206,20 +203,22 @@
                 .then(response => response.json())
                 .then(data => {
                     translatedText.value = data.translation;
-
-                    document.querySelectorAll('.hitbox').forEach(hitbox => {
-                        if (hitbox.dataset.selected === 'true') {
-                            hitbox.dataset.description = data.translation;
-                            hitbox.dataset.locale = endLanguageSelect.value;
-                            hitbox.querySelector('.hitbox-text').textContent = data.translation;
-                        }
-                    });
                 });
             }
 
             sourceText.addEventListener('input', translateText);
-
-            translateButton.addEventListener('click', translateText);
+            startLanguageSelect.addEventListener('change', translateText)
+            endLanguageSelect.addEventListener('change', translateText)
+            function placeTranslated(){
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        if (hitbox.dataset.selected === 'true') {
+                            hitbox.dataset.description =  translatedText.value ;
+                            hitbox.dataset.locale = endLanguageSelect.value;
+                            hitbox.querySelector('.hitbox-text').textContent = translatedText.value;
+                        }
+                    });
+            }
+            translateButton.addEventListener('click', placeTranslated);
         };
 
         if (originalImage.complete) {
