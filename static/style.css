@@ -12,7 +12,49 @@ justify-content:center;
 display:vertical;
 align-items:center;
 justify-content:center;
+position: relative;
 }
+.hitbox {
+    position: absolute;
+    border: 2px solid transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.hitbox[data-selected="true"] {
+    background-color: #4b9cd3; /* Darker blue */
+    border: 2px solid blue;
+}
+
+.hitbox-text {
+    color: #000000; /* White text */
+    text-align: center;
+    word-wrap: break-word;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+
+
+#original-image {
+    position: relative; /* обязательно должен быть position: relative; */
+    z-index: 1; /* устанавливаем z-index, например, 1 */
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 2; /* устанавливаем z-index выше, например, 2 */
+}
+
 #menu-and-picture{
 display:flex;
 align-items:center;
