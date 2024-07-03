@@ -7,7 +7,16 @@ display:vertical;
 align-items:center;
 justify-content:center;
 }
+h1{
+color:white;
+}
+#upload-txt-buttons{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
+}
 #all{
 display:vertical;
 align-items:center;
@@ -45,6 +54,8 @@ position: relative;
 #original-image {
     position: relative; /* обязательно должен быть position: relative; */
     z-index: 1; /* устанавливаем z-index, например, 1 */
+    width=300px;
+    height=500px;
 }
 
 .overlay {
@@ -54,7 +65,14 @@ position: relative;
     pointer-events: none;
     z-index: 2; /* устанавливаем z-index выше, например, 2 */
 }
+#downloadbtn:hover {
+background-color: #4B78EC;
+    color:white;
 
+}
+#downloadbtn:active {
+    background-color: #2980b9;
+}
 #menu-and-picture{
 display:flex;
 align-items:center;
@@ -103,6 +121,10 @@ border-radius:36px;
   background:#cccccc;
   border:1px solid #cccccc;
 }
+select:hover{
+background-color:#67F38E;
+
+}
 option{
 width:140px;
   height:40px;
@@ -122,4 +144,15 @@ background-color:#9ACCFB;
 div{
 border-radius: 15px;
 padding:5px;
+}
+.button:hover {
+background-color: #4B78EC;
+    color:white;
+
+}
+textarea:hover{
+background-color:#67F38E;
+}
+.button:active {
+    background-color: #2980b9;
 }

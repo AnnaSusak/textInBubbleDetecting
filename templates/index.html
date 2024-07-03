@@ -2,13 +2,16 @@
 <html>
 <link rel="stylesheet" href="static/style.css">
 <head>
-    <title>Upload Image</title>
 </head>
 <body>
+<div id="upload-txt-buttons">
     <h1>Upload an Image</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data" >
-        <input type="file" name="file" class="button">
-        <input type="submit" value="Upload" class="button">
+
+    <form action="/upload" method="post" enctype="multipart/form-data" class="button">
+        <input  type="file" name="file" class="button">
+        <input type="submit" value="Upload"  class="button">
     </form>
+</div>
+
 </body>
 </html>
