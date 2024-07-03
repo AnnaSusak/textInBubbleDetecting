@@ -8,6 +8,8 @@ import supervision as sv
 import cv2
 import bubbler
 from google.cloud import translate_v2 as translate
+import numpy as np
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -26,9 +28,34 @@ if not os.path.exists(app.config['TEMP_FOLDER']):
     os.makedirs(app.config['TEMP_FOLDER'])
 
 # Initialize Roboflow model
+# rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
+# project = rf.workspace().project("manwgaspeechbubble")
+# model = project.version(1).model
 rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
-project = rf.workspace().project("manwgaspeechbubble")
+project = rf.workspace().project("bubble_cutter")
 model = project.version(1).model
+
+
+def get_average_color(image, x1, y1, x2, y2):
+    height, width, _ = image.shape
+    x1 = max(1, x1)
+    y1 = max(1, y1)
+    x2 = min(width - 2, x2)
+    y2 = min(height - 2, y2)
+   
+    colors = []
+    for x in range(x1 - 1, x2 + 2):
+        colors.append(image[y1 - 1, x])
+        colors.append(image[y2 + 1, x])
+        
+    for y in range(y1, y2 + 1):
+        colors.append(image[y, x1 - 1])
+        colors.append(image[y, x2 + 1])
+        
+    colors = np.array(colors)
+    average_color = np.mean(colors, axis=0)
+    
+    return np.round(average_color).astype(int)[::-1]
 
 def predicter(path):
     result = model.predict(path, confidence=70, overlap=30).json()
@@ -56,7 +83,7 @@ def predicter(path):
         results.remove(None)
     for i, result in enumerate(results):
         print("RESULT", result)
-        bubble_info = create_overlays_for_bubble(result[0], str(i))
+        bubble_info = create_overlays_for_bubble(image, result[0], str(i))
         for j, coord in enumerate(result[0]):
             coord.append(bubble_info[j]['filename'])
             result[0][j] = coord
@@ -86,7 +113,7 @@ def upload():
         print(bubbles)
         return render_template('uploaded.html', filename=filename, bubbles=bubbles)
 
-def create_overlays_for_bubble(coordinates, bubble_name):
+def create_overlays_for_bubble(image, coordinates, bubble_name):
     print("COORDINATES", coordinates)
     overlay_filenames = []
 
@@ -96,7 +123,8 @@ def create_overlays_for_bubble(coordinates, bubble_name):
     for i, coords in enumerate(coordinates):
         coords = [(int(x), int(y)) for x, y in coords]
         print(coords)
-        overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (255, 255, 255, 255))
+        
+        overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (*get_average_color(image, coords[0][0], coords[0][1], coords[1][0], coords[1][1]), 255))
         overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
         overlay.save(overlay_path)
