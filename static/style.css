@@ -85,6 +85,10 @@ background-color: #6773F7;
 background-color:#3CF3AC;
 
 }
+.mycontainer{
+padding:5px;
+border-radius:15px;
+}
 .text-menu{
 background-color:#7C7CD5;
 }

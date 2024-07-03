@@ -6,13 +6,11 @@
 </head>
 <body>
 <div id="all">
-    <div class="up-menu">
-        <button class="icon-btn" id="lasso"></button>
-        <button class="icon-btn" id="pencil"></button>
-        <button class="icon-btn" id="text-btn"></button>
+    <div class="up-menu mycontainer">
+        <img src="static/refresh.png"/>
     </div>
     <div id="menu-and-picture">
-        <div class="translation-menu">
+        <div class="translation-menu mycontainer">
             <div>
                 <select class="select1" name="models" id="model-select">
                     <option value="google_translate">Google переводчик</option>
@@ -23,16 +21,20 @@
             <div>
                 <select class="select1" name="languages" id="start-language-select">
                     <option value="en">English</option>
-                    <option value="jp">Japanese</option>
+                    <option value="ja">Japanese</option>
                     <option value="ru">Russian</option>
+                    <option value="zh-CN">Chinese</option>
+                    <option value="ko">Korean</option>
                 </select>
             </div>
             <div><textarea id="source-text"></textarea></div>
             <div>
                 <select class="select1" name="languages2" id="end-language-select">
                     <option value="en">English</option>
-                    <option value="jp">Japanese</option>
+                    <option value="ja">Japanese</option>
                     <option value="ru">Russian</option>
+                    <option value="zh-CN">Chinese</option>
+                    <option value="ko">Korean</option>
                 </select>
             </div>
             <div><textarea id="translated-text"></textarea></div>
@@ -45,7 +47,7 @@
             <button class="button"><a href="{{ url_for('send_uploaded_file', filename=filename) }}">Загрузить</a></button>
             <div id="bubble-overlays" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
         </div>
-        <div class="text-menu">
+        <div class="text-menu mycontainer">
             <div>
                 <select name="fonts" id="fonts-select" class="select2">
                     <option value="Times New Roman">Times New Roman</option>
@@ -72,7 +74,11 @@
                     <option value="24">24</option>
                 </select>
             </div>
-            <div>тут будет выбор выравнивания</div>
+             <div class="up-menu mycontainer">
+                <img src="static/left.png"/>
+                 <img src="static/center.png"/>
+                 <img src="static/right.png"/>
+            </div>
         </div>
     </div>
 </div>
