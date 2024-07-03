@@ -141,10 +141,7 @@ background-color:#9ACCFB;
     color: black;
     text-decoration: none;
 }
-div{
-border-radius: 15px;
-padding:5px;
-}
+
 .button:hover {
 background-color: #4B78EC;
     color:white;
