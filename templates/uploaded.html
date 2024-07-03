@@ -64,14 +64,16 @@
             </div>
             <div>
                 <select name="fontsize" id="fontsize-select" class="select2">
+                    <option value="8">8</option>
                     <option value="10">10</option>
                     <option value="12">12</option>
                     <option value="14">14</option>
-                    <option value="16">16</option>
+                    <option value="16" selected>16</option>
                     <option value="18">18</option>
                     <option value="20">20</option>
                     <option value="22">22</option>
                     <option value="24">24</option>
+                    <option value="26">26</option>
                 </select>
             </div>
              <div class="up-menu mycontainer">
@@ -95,6 +97,8 @@
         const startLanguageSelect = document.getElementById('start-language-select');
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
+
+	const fontSelect = document.getElementById('fontsize-select');
 
         originalImage.onload = function () {
             const imageRect = originalImage.getBoundingClientRect();
@@ -133,7 +137,9 @@
                     hitbox.dataset.selected = 'false';
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
-                    hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
+                    
+                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px;">${bubble[1]}</div>`;
+                    // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
                     bubbleDiv.appendChild(hitbox);
 
                     hitbox.addEventListener('mouseenter', function () {
@@ -171,6 +177,7 @@
                             hitbox.dataset.selected = 'true';
                             hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
                             updateTranslationMenu(hitbox);
+                            fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
                         }
                     } else {
                         hitbox.dataset.selected = 'false';
@@ -212,6 +219,17 @@
                 });
             }
 
+            function fontChange() {
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+		        if (hitbox.dataset.selected === 'true') {
+		            hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
+		        }
+		    });
+            }
+
+            
+            fontSelect.addEventListener('change', fontChange)
+            
             sourceText.addEventListener('input', translateText);
             startLanguageSelect.addEventListener('change', translateText)
             endLanguageSelect.addEventListener('change', translateText)
