@@ -123,6 +123,9 @@ def translate():
     data = request.get_json()
     text = data.get('text')
 
+    if from_lang == to_lang:
+        return jsonify({'translation': text})
+    
     if engine == 'google_translate':
         result = translate_client.translate(text, source_language=from_lang, target_language=to_lang)
         return jsonify({'translation': result['translatedText']})
