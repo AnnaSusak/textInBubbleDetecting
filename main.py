@@ -10,6 +10,8 @@ import bubbler
 from google.cloud import translate_v2 as translate
 import numpy as np
 from openai import OpenAI
+import json
+import requests
 
 
 app = Flask(__name__)
@@ -28,17 +30,28 @@ if not os.path.exists(app.config['BUBBLES_FOLDER']):
 if not os.path.exists(app.config['TEMP_FOLDER']):
     os.makedirs(app.config['TEMP_FOLDER'])
 
+
+with open('luka_api_keys.json', 'r', encoding='utf-8') as file:
+    api_keys = json.load(file)
+
 # Initialize Roboflow model
-# rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
+# rf = Roboflow(api_key=api_keys['roboflow'])
 # project = rf.workspace().project("manwgaspeechbubble")
 # model = project.version(1).model
-rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
+rf = Roboflow(api_key=api_keys['roboflow'])
 project = rf.workspace().project("bubble_cutter")
 model = project.version(1).model
 
 client = OpenAI(
-    api_key='sk-proj-nRQjwV7XwAs' + 'O8dyrOEEnT3BlbkFJuaoZYlGKOw5iJ6HCVK0l'
+    api_key=api_keys['chat_gpt']
 )
+
+url = "https://iam.api.cloud.yandex.net/iam/v1/tokens"
+data = {
+    "yandexPassportOauthToken": api_keys['yandex']
+}
+
+yandex_token = 'Bearer ' + requests.post(url, json=data).json()['iamToken']
 
 
 def get_average_color(image, x1, y1, x2, y2):
@@ -181,8 +194,23 @@ def translate():
         result = translate_client.translate(text, source_language=from_lang, target_language=to_lang)
         return jsonify({'translation': result['translatedText']})
 
+    if engine == 'yandex_translate':
+        body = {
+            "targetLanguageCode": to_lang,
+            "texts": [text],
+            "folderId": 'b1g63hjg7a4mld5anvbn',
+        }
+    
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": yandex_token
+        }
 
-
+        response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/translate',
+            json = body,
+            headers = headers
+        )
+        return jsonify({'translation': response.json()['translations'][0]['text']})
 
     return jsonify({'error': 'Unsupported translation engine'}), 400
 
