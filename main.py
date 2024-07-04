@@ -9,6 +9,7 @@ import cv2
 import bubbler
 from google.cloud import translate_v2 as translate
 import numpy as np
+from openai import OpenAI
 
 
 app = Flask(__name__)
@@ -34,6 +35,10 @@ if not os.path.exists(app.config['TEMP_FOLDER']):
 rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
 project = rf.workspace().project("bubble_cutter")
 model = project.version(1).model
+
+client = OpenAI(
+    api_key='sk-proj-nRQjwV7XwAs' + 'O8dyrOEEnT3BlbkFJuaoZYlGKOw5iJ6HCVK0l'
+)
 
 
 def get_average_color(image, x1, y1, x2, y2):
@@ -154,9 +159,30 @@ def translate():
     if from_lang == to_lang:
         return jsonify({'translation': text})
     
+
+    if engine == 'ChatGPT3.5':
+        try:
+            response = client.chat.completions.create(
+            model="gpt-3.5-turbo-1106",
+            messages=[
+            {"role": "system", "content": "You are a translator. Say only translated words without quotes"},
+            {"role": "user", "content": f"translate:\n\"{text}\"\nfrom \"{from_lang}\" to \"{to_lang}\" language"}],
+            temperature=1,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0)
+            # print(response)
+            return jsonify({'translation': response.choices[0].message.content})
+        except Exception:
+            return jsonify({'translation': text})
+        
     if engine == 'google_translate':
         result = translate_client.translate(text, source_language=from_lang, target_language=to_lang)
         return jsonify({'translation': result['translatedText']})
+
+
+
 
     return jsonify({'error': 'Unsupported translation engine'}), 400
 
