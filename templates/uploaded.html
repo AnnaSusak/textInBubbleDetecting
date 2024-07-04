@@ -229,8 +229,8 @@
 
             
             fontSelect.addEventListener('change', fontChange)
-            
             sourceText.addEventListener('input', translateText);
+            modelSelect.addEventListener('change', translateText)
             startLanguageSelect.addEventListener('change', translateText)
             endLanguageSelect.addEventListener('change', translateText)
             function placeTranslated(){
