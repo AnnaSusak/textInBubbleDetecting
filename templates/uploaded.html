@@ -57,9 +57,10 @@
             </div>
             <div>
                 <select name="types" id="types-select" class="select2">
-                    <option value="Regular">Regular</option>
-                    <option value="Bold">Bold</option>
-                    <option value="Thick">Thick</option>
+                    <option value="bold">Жирный</option>
+                    <option value="bolder">Полужирный</option>
+                    <option value="normal">Обычный</option>
+                    <option value="lighter">Тонкий</option>
                 </select>
             </div>
             <div>
@@ -98,7 +99,7 @@
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
         const fontSelect1 = document.getElementById('fonts-select');
-
+        const fontThicknessSelect = document.getElementById('types-select');
 
 	const fontSelect = document.getElementById('fontsize-select');
 
@@ -229,18 +230,26 @@
 		    });
             }
             function fontChange1() {
-                console.log("hello");
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
 		        if (hitbox.dataset.selected === 'true') {
 		            hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
 		        }
 		    });
             }
-            
+            function fontThicknessChange() {
+            console.log(1)
+                const fontThicknessSelect = document.getElementById('types-select');
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.querySelector('.hitbox-text').style.fontWeight = fontThicknessSelect.value;
+                    }
+                });
+            }
+            fontThicknessSelect.addEventListener('change', fontThicknessChange);
             fontSelect.addEventListener('change', fontChange);
             fontSelect1.addEventListener('change', fontChange1);
             sourceText.addEventListener('input', translateText);
-            modelSelect.addEventListener('change', translateText)
+            modelSelect.addEventListener('change', translateText);
             startLanguageSelect.addEventListener('change', translateText)
             endLanguageSelect.addEventListener('change', translateText)
             function placeTranslated(){
