@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <head>
     <title>Uploaded Image</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <div id="all">
@@ -41,10 +42,10 @@
             <div>
                 <button class="button" id="translate-button">Перевести</button>
             </div>
+            <button class="button" onclick="downloadImage()">Скачать</button>
         </div>
         <div id="picture-download" style="position: relative;">
             <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
-            <button class="button"><a href="{{ url_for('send_uploaded_file', filename=filename) }}">Загрузить</a></button>
             <div id="bubble-overlays" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
         </div>
         <div class="text-menu mycontainer">
@@ -87,6 +88,17 @@
 </div>
 
 <script>
+    function downloadImage() {
+        const element = document.getElementById('picture-download');
+
+        html2canvas(element).then(canvas => {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = 'screenshot.png';
+            link.click();
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const bubbles = {{ bubbles|tojson }};
         const originalImage = document.getElementById('original-image');
