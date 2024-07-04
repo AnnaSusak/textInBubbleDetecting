@@ -97,6 +97,8 @@
         const startLanguageSelect = document.getElementById('start-language-select');
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
+        const fontSelect1 = document.getElementById('fonts-select');
+
 
 	const fontSelect = document.getElementById('fontsize-select');
 
@@ -226,9 +228,17 @@
 		        }
 		    });
             }
-
+            function fontChange1() {
+                console.log("hello");
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+		        if (hitbox.dataset.selected === 'true') {
+		            hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
+		        }
+		    });
+            }
             
-            fontSelect.addEventListener('change', fontChange)
+            fontSelect.addEventListener('change', fontChange);
+            fontSelect1.addEventListener('change', fontChange1);
             sourceText.addEventListener('input', translateText);
             modelSelect.addEventListener('change', translateText)
             startLanguageSelect.addEventListener('change', translateText)
