@@ -18,7 +18,7 @@ color:white;
 
 }
 #all{
-display:vertical;
+display:flex;
 align-items:center;
 justify-content:center;
 position: relative;
@@ -72,10 +72,15 @@ background-color: #4B78EC;
 #downloadbtn:active {
     background-color: #2980b9;
 }
-#menu-and-picture{
+#menu-and-picture {
 display:flex;
 align-items:center;
 justify-content:center;
+}
+#translate-refresh{
+display:flex;
+align-items:left;
+justify-content:left;
 }
 .translation-menu{
 background-color: #6773F7;

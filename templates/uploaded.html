@@ -7,9 +7,6 @@
 </head>
 <body>
 <div id="all">
-    <div class="up-menu mycontainer">
-        <img src="static/refresh.png"/>
-    </div>
     <div id="menu-and-picture">
         <div class="translation-menu mycontainer">
             <div>
@@ -39,8 +36,9 @@
                 </select>
             </div>
             <div><textarea id="translated-text"></textarea></div>
-            <div>
+            <div id="translate-refresh">
                 <button class="button" id="translate-button">Перевести</button>
+                <img src="static/refresh.png"/>
             </div>
             <button class="button" onclick="downloadImage()">Скачать</button>
         </div>
@@ -85,11 +83,6 @@
             <div>
             	<input type="color" id="textColorPicker">
             	<span id="textColorValue">#000000</span>
-            </div>
-            <div class="up-menu mycontainer">
-                <img src="static/left.png"/>
-                 <img src="static/center.png"/>
-                 <img src="static/right.png"/>
             </div>
         </div>
     </div>
