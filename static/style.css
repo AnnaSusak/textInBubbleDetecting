@@ -94,7 +94,7 @@ background-color:#3CF3AC;
 
 }
 .mycontainer{
-padding:5px;
+padding:10px;
 border-radius:15px;
 }
 .text-menu{
@@ -136,6 +136,7 @@ border-radius:36px;
   overflow:hidden;
   background:#cccccc;
   border:1px solid #cccccc;
+  margin:5px;
 }
 select:hover{
 background-color:#67F38E;
@@ -168,4 +169,10 @@ background-color:#67F38E;
 }
 .button:active {
     background-color: #2980b9;
+}
+#refresh{
+    width:24px;
+    height:24px;
+    margin-top:15px;
+    margin-left:10px;
 }
