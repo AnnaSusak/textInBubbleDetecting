@@ -51,16 +51,16 @@
         <div class="text-menu mycontainer">
             <div>
                 <select name="fonts" id="fonts-select" class="select2">
-                    <option value="Times New Roman">Times New Roman</option>
-                    <option value="Arial">Arial</option>
-                    <option value="Comic Sans">Comic Sans</option>
+                    <option value='"Times New Roman"'>Times New Roman</option>
+                    <option value="Arial" selected>Arial</option>
+                    <option value='"Comic Sans MS"'' >Comic Sans MS</option>
                 </select>
             </div>
             <div>
                 <select name="types" id="types-select" class="select2">
                     <option value="bold">Жирный</option>
                     <option value="bolder">Полужирный</option>
-                    <option value="normal">Обычный</option>
+                    <option value="normal" selected>Обычный</option>
                     <option value="lighter">Тонкий</option>
                 </select>
             </div>
@@ -69,8 +69,8 @@
                     <option value="10">10</option>
                     <option value="12">12</option>
                     <option value="14">14</option>
-                    <option value="16">16</option>
-                    <option value="18" selected>18</option>
+                    <option value="16" selected>16</option>
+                    <option value="18">18</option>
                     <option value="20">20</option>
                     <option value="22">22</option>
                     <option value="24">24</option>
@@ -78,7 +78,11 @@
                     <option value="28">28</option>
                 </select>
             </div>
-             <div class="up-menu mycontainer">
+            <div>
+            	<input type="color" id="colorPicker">
+            	<span id="colorValue">#000000</span>
+            </div>
+            <div class="up-menu mycontainer">
                 <img src="static/left.png"/>
                  <img src="static/center.png"/>
                  <img src="static/right.png"/>
@@ -112,8 +116,9 @@
         const translateButton = document.getElementById('translate-button');
         const fontSelect1 = document.getElementById('fonts-select');
         const fontThicknessSelect = document.getElementById('types-select');
-
-	const fontSelect = document.getElementById('fontsize-select');
+        const colorPicker = document.getElementById('colorPicker');
+        const colorValue = document.getElementById('colorValue');
+	    const fontSelect = document.getElementById('fontsize-select');
 
         originalImage.onload = function () {
             const imageRect = originalImage.getBoundingClientRect();
@@ -153,7 +158,7 @@
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
                     
-                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px;">${bubble[1]}</div>`;
+                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; font-family: ${fontSelect1.value};">${bubble[1]}</div>`;
                     // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
                     bubbleDiv.appendChild(hitbox);
 
@@ -192,7 +197,50 @@
                             hitbox.dataset.selected = 'true';
                             hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
                             updateTranslationMenu(hitbox);
+
+                            fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
+
+                            const imgs = hitbox.parentElement.querySelectorAll('img');
+                            const canvas = document.createElement('canvas');
+                            const ctx = canvas.getContext('2d');
+
+                            let totalR = 0, totalG = 0, totalB = 0;
+
+                            imgs.forEach((img, index) => {
+                                const image = new Image();
+                                image.src = img.src;
+                                image.crossOrigin = "Anonymous"; // To avoid cross-origin issues
+
+                                image.onload = () => {
+                                    canvas.width = image.width;
+                                    canvas.height = image.height;
+                                    ctx.drawImage(image, 0, 0, image.width, image.height);
+
+                                    const imageData = ctx.getImageData(0, 0, 1, 1).data; // Get the color of the first pixel
+                                    totalR += imageData[0];
+                                    totalG += imageData[1];
+                                    totalB += imageData[2];
+
+                                    if (index === imgs.length - 1) {
+                                        const avgR = Math.round(totalR / imgs.length);
+                                        const avgG = Math.round(totalG / imgs.length);
+                                        const avgB = Math.round(totalB / imgs.length);
+
+                                        const avgColorHex = rgbToHex(avgR, avgG, avgB);
+                                        colorValue.textContent = avgColorHex;
+                                    }
+                                };
+                            });
+
+                            function rgbToHex(r, g, b) {
+                                const toHex = (component) => {
+                                    const hex = component.toString(16);
+                                    return hex.length === 1 ? '0' + hex : hex;
+                                };
+
+                                return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+                            }
                         }
                     } else {
                         hitbox.dataset.selected = 'false';
@@ -257,6 +305,57 @@
                     }
                 });
             }
+
+            function changeImageColor(img, color) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const imgWidth = img.width;
+                const imgHeight = img.height;
+
+                canvas.width = imgWidth;
+                canvas.height = imgHeight;
+
+                ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
+
+                const imageData = ctx.getImageData(0, 0, imgWidth, imgHeight);
+                const data = imageData.data;
+
+                const hexToRgb = (hex) => {
+                    let r = 0, g = 0, b = 0;
+                    if (hex.length == 7) {
+                        r = parseInt(hex.slice(1, 3), 16);
+                        g = parseInt(hex.slice(3, 5), 16);
+                        b = parseInt(hex.slice(5, 7), 16);
+                    }
+                    return { r, g, b };
+                }
+
+                const { r, g, b } = hexToRgb(color);
+
+                for (let i = 0; i < data.length; i += 4) {
+                    // Change the color by modifying the pixel data
+                    data[i] = r;     // Red
+                    data[i + 1] = g; // Green
+                    data[i + 2] = b; // Blue
+                    // Alpha (data[i + 3]) remains unchanged
+                }
+
+                ctx.putImageData(imageData, 0, 0);
+                img.src = canvas.toDataURL();
+            }
+
+            colorPicker.addEventListener('input', (event) => {
+                colorValue.textContent = event.target.value;
+                Array.from(overlaysContainer.children).forEach(child => {
+                    const hitbox = child.querySelector('.hitbox');
+                    if (hitbox && hitbox.dataset.selected === 'true') {
+                        const imgs = child.querySelectorAll('img');
+                        const color = event.target.value;
+                        imgs.forEach(img => changeImageColor(img, color));
+                    }
+                });
+            });
+            
             fontThicknessSelect.addEventListener('change', fontThicknessChange);
             fontSelect.addEventListener('change', fontChange);
             fontSelect1.addEventListener('change', fontChange1);
