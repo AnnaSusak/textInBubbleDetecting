@@ -53,7 +53,7 @@
                 <select name="fonts" id="fonts-select" class="select2">
                     <option value='"Times New Roman"'>Times New Roman</option>
                     <option value="Arial" selected>Arial</option>
-                    <option value='"Comic Sans MS"'' >Comic Sans MS</option>
+                    <option value='"Comic Sans MS"' >Comic Sans MS</option>
                 </select>
             </div>
             <div>
@@ -81,6 +81,10 @@
             <div>
             	<input type="color" id="colorPicker">
             	<span id="colorValue">#000000</span>
+            </div>
+            <div>
+            	<input type="color" id="textColorPicker">
+            	<span id="textColorValue">#000000</span>
             </div>
             <div class="up-menu mycontainer">
                 <img src="static/left.png"/>
@@ -118,6 +122,8 @@
         const fontThicknessSelect = document.getElementById('types-select');
         const colorPicker = document.getElementById('colorPicker');
         const colorValue = document.getElementById('colorValue');
+        const textColorPicker = document.getElementById('textColorPicker');
+        const textColorValue = document.getElementById('textColorValue');
 	    const fontSelect = document.getElementById('fontsize-select');
 
         originalImage.onload = function () {
@@ -298,7 +304,6 @@
 		    });
             }
             function fontThicknessChange() {
-            console.log(1)
                 const fontThicknessSelect = document.getElementById('types-select');
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
                     if (hitbox.dataset.selected === 'true') {
@@ -356,7 +361,14 @@
                     }
                 });
             });
-            
+            textColorPicker.addEventListener('input', (event) => {
+                const color = event.target.value;
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.querySelector('.hitbox-text').style.color = color;
+                    }
+                });
+            });
             fontThicknessSelect.addEventListener('change', fontThicknessChange);
             fontSelect.addEventListener('change', fontChange);
             fontSelect1.addEventListener('change', fontChange1);

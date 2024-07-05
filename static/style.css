@@ -54,8 +54,7 @@ position: relative;
 #original-image {
     position: relative; /* обязательно должен быть position: relative; */
     z-index: 1; /* устанавливаем z-index, например, 1 */
-    width=300px;
-    height=500px;
+    
 }
 
 .overlay {
