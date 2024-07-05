@@ -39,7 +39,7 @@ with open('luka_api_keys.json', 'r', encoding='utf-8') as file:
 # project = rf.workspace().project("manwgaspeechbubble")
 # model = project.version(1).model
 rf = Roboflow(api_key=api_keys['roboflow'])
-project = rf.workspace().project("bubble_cutter")
+project = rf.workspace().project("cut_the_bubble")
 model = project.version(1).model
 
 client = OpenAI(
@@ -76,7 +76,7 @@ def get_average_color(image, x1, y1, x2, y2):
     return np.round(average_color).astype(int)[::-1]
 
 def predicter(path):
-    result = model.predict(path, confidence=70, overlap=30).json()
+    result = model.predict(path, confidence=60, overlap=30).json()
     predictions = [(pred['x'], pred['y'], pred['width'], pred['height'], pred['confidence']) for pred in
                    result['predictions']]
 
