@@ -84,6 +84,10 @@ justify-content:left;
 }
 .translation-menu{
 background-color: #6773F7;
+ position: fixed;
+top: 0;
+z-index: 1000;
+left:0;
 }
 .up-menu{
 background-color:#3CF3AC;
@@ -95,6 +99,10 @@ border-radius:15px;
 }
 .text-menu{
 background-color:#7C7CD5;
+position: fixed;
+top: 0;
+right:0;
+z-index: 1000;
 }
 /* Стиль для кнопки */
 .button {
