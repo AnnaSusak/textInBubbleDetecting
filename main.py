@@ -12,6 +12,7 @@ import numpy as np
 from openai import OpenAI
 import json
 import requests
+from matplotlib import pyplot as plt
 
 
 app = Flask(__name__)
@@ -99,13 +100,24 @@ def predicter(path):
     loop.close()
     while None in results:
         results.remove(None)
+
+    mask_cords = [res[3] for res in results]
+    
+    height, width = image.shape[:2]
+    mask = np.zeros((height, width), dtype=np.uint8)
+    for (x1, y1), (x2, y2) in mask_cords:
+        cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1)
+    output_image = cv2.inpaint(image, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+
     for i, result in enumerate(results):
         print("RESULT", result)
-        bubble_info = create_overlays_for_bubble(image, result[0], str(i))
-        for j, coord in enumerate(result[0]):
-            coord.append(bubble_info[j]['filename'])
-            result[0][j] = coord
-        print(result)
+        # result = [[result[3]], result[1], result[2], result[3]]
+        bubble_info = create_overlays_for_bubble(output_image, [result[3]], str(i))
+        # for j, coord in enumerate(result[0]):
+        #     coord.append(bubble_info[j]['filename'])
+        #     result[0][j] = coord
+        # print(result)
+        result = ([[result[3][0], result[3][1], bubble_info[0]['filename']]], result[1], result[2], result[3])
         results[i] = result
     return results
 
@@ -132,23 +144,45 @@ def upload():
         return render_template('uploaded.html', filename=filename, bubbles=bubbles)
 
 def create_overlays_for_bubble(image, coordinates, bubble_name):
-    print("COORDINATES", coordinates)
     overlay_filenames = []
 
     if not os.path.exists(app.config['TEMP_FOLDER']):
         os.makedirs(app.config['TEMP_FOLDER'])
 
     for i, coords in enumerate(coordinates):
-        coords = [(int(x), int(y)) for x, y in coords]
         print(coords)
-        
-        overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (*get_average_color(image, coords[0][0], coords[0][1], coords[1][0], coords[1][1]), 255))
+        coords = [(int(x), int(y)) for (x, y) in coords]
+
+        # Вырезка части изображения по координатам
+        x1, y1 = coords[0]
+        x2, y2 = coords[1]
+        crop_img = image[y1:y2, x1:x2]
+
+        overlay = Image.fromarray(cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGBA))
         overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
         overlay.save(overlay_path)
         overlay_filenames.append({'filename': overlay_filename, 'coords': coords})
 
     return overlay_filenames
+
+# def create_overlays_for_bubble(image, coordinates, bubble_name):
+#     overlay_filenames = []
+
+#     if not os.path.exists(app.config['TEMP_FOLDER']):
+#         os.makedirs(app.config['TEMP_FOLDER'])
+
+#     for i, coords in enumerate(coordinates):
+#         print(coords)
+#         coords = [(int(x), int(y)) for (x, y) in coords]
+        
+#         overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (*get_average_color(image, coords[0][0], coords[0][1], coords[1][0], coords[1][1]), 0))
+#         overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
+#         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
+#         overlay.save(overlay_path)
+#         overlay_filenames.append({'filename': overlay_filename, 'coords': coords})
+
+#     return overlay_filenames
 
 @app.route('/uploads/<filename>')
 def send_uploaded_file(filename):
@@ -171,7 +205,6 @@ def translate():
 
     if from_lang == to_lang:
         return jsonify({'translation': text})
-    
 
     if engine == 'ChatGPT3.5':
         try:
