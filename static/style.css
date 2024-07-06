@@ -176,3 +176,15 @@ background-color:#67F38E;
     margin-top:15px;
     margin-left:10px;
 }
+#refresh-button{
+    
+    border-radius: 50%;
+    width:25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+#refresh-picture{
+
+}
