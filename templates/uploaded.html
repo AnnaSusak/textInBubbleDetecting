@@ -39,53 +39,71 @@
             <div id="translate-refresh">
                 <button class="button" id="translate-button">Вставить</button>
                 <button id="refresh-button" class="button">
-                    <img src="static/refresh.png" alt="Refresh" id="refresh-picture"/>  
+                    <img src="static/refresh.png" alt="Refresh" id="refresh-picture"/>
                 </button>
-            </div>                     
-            <div><button class="button" id="translate-all-button">Перевести все</button></div>
-            <div></div><button class="button" onclick="downloadImage()">Скачать</button></div>
+            </div>
+            <div>
+                <button class="button" id="translate-all-button">Перевести все</button>
+            </div>
+            <div></div>
+            <button class="button" onclick="downloadImage()">Скачать</button>
         </div>
-        <div id="picture-download" style="position: relative;">
-            <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
-            <div id="bubble-overlays" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+    </div>
+    <div id="picture-download" style="position: relative;">
+        <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
+        <div id="bubble-overlays"
+             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+    </div>
+    <div class="text-menu mycontainer">
+        <div>
+            <select name="fonts" id="fonts-select" class="select2">
+                <option value='"Times New Roman"'>Times New Roman</option>
+                <option value="Arial" selected>Arial</option>
+                <option value='"Comic Sans MS"'>Comic Sans MS</option>
+            </select>
         </div>
-        <div class="text-menu mycontainer">
+        <div>
+            <select name="types" id="types-select" class="select2">
+                <option value="bold">Жирный</option>
+                <option value="bolder">Полужирный</option>
+                <option value="normal" selected>Обычный</option>
+                <option value="lighter">Тонкий</option>
+            </select>
+        </div>
+        <div>
+            <select name="fontsize" id="fontsize-select" class="select2">
+                <option value="10">10</option>
+                <option value="12">12</option>
+                <option value="14">14</option>
+                <option value="16" selected>16</option>
+                <option value="18">18</option>
+                <option value="20">20</option>
+                <option value="22">22</option>
+                <option value="24">24</option>
+                <option value="26">26</option>
+                <option value="28">28</option>
+            </select>
+        </div>
+        <div id="switch-container">
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label> обводка текста
+        </div>
+        <div>
+            <div><input type="color" id="colorPicker">
+                <span id="colorValue">#ffffff</span></div>
             <div>
-                <select name="fonts" id="fonts-select" class="select2">
-                    <option value='"Times New Roman"'>Times New Roman</option>
-                    <option value="Arial"selected>Arial</option>
-                    <option value='"Comic Sans MS"'>Comic Sans MS</option>
-                </select>
+                <p>Прозрачность: <input type="range" min="1" max="5" id="size"
+                oninput="sizePic()" value="3"></p>
             </div>
             <div>
-                <select name="types" id="types-select" class="select2">
-                    <option value="bold">Жирный</option>
-                    <option value="bolder">Полужирный</option>
-                    <option value="normal" selected>Обычный</option>
-                    <option value="lighter">Тонкий</option>
-                </select>
+                <input type="color" id="textColorPicker">
+                <span id="textColorValue">#000000</span>
             </div>
             <div>
-                <select name="fontsize" id="fontsize-select" class="select2">
-                    <option value="10">10</option>
-                    <option value="12">12</option>
-                    <option value="14">14</option>
-                    <option value="16" selected>16</option>
-                    <option value="18">18</option>
-                    <option value="20">20</option>
-                    <option value="22">22</option>
-                    <option value="24">24</option>
-                    <option value="26">26</option>
-                    <option value="28">28</option>
-                </select>
-            </div>
-            <div>
-            	<input type="color" id="colorPicker">
-            	<span id="colorValue">#ffffff</span>
-            </div>
-            <div>
-            	<input type="color" id="textColorPicker">
-            	<span id="textColorValue">#000000</span>
+                <p>Прозрачность: <input type="range" min="1" max="5" id="size2"
+                oninput="sizePic()" value="3"></p>
             </div>
         </div>
     </div>
@@ -132,7 +150,7 @@
         const colorValue = document.getElementById('colorValue');
         const textColorPicker = document.getElementById('textColorPicker');
         const textColorValue = document.getElementById('textColorValue');
-	    const fontSelect = document.getElementById('fontsize-select');
+        const fontSelect = document.getElementById('fontsize-select');
 
         originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
@@ -172,7 +190,7 @@
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
                     hitbox.dataset.original_text = bubble[1];
-                    
+
                     hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; color: #000000; font-family: ${fontSelect1.value}; font-weight: ${fontThicknessSelect.value};">${bubble[1]}</div>`;
                     // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
                     bubbleDiv.appendChild(hitbox);
@@ -216,7 +234,7 @@
                             fontThicknessSelect.value = hitbox.querySelector('.hitbox-text').style.fontWeight;
                             fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
-                            
+
                             const rgbColor = hitbox.querySelector('.hitbox-text').style.color;
                             const rgbValues = rgbColor.match(/\d+/g);
                             const r = parseInt(rgbValues[0]);
@@ -303,17 +321,17 @@
             function fontChange() {
                 var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
-		        if (hitbox.dataset.selected === 'true') {
-		            hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
+                if (hitbox.dataset.selected === 'true') {
+                    hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
                     flag = false;
-		        }
-                                
+                }
+
                 if (flag) {
                     document.querySelectorAll('.hitbox').forEach(hitbox => {
                         hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
                     });
                 }
-		    });
+            });
             }
             function fontChange1() {
                 var flag = true;
@@ -322,8 +340,8 @@
                         hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
                         flag = false;
                     }
-		        });
-                
+                });
+
                 if (flag) {
                     document.querySelectorAll('.hitbox').forEach(hitbox => {
                         hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
@@ -450,7 +468,7 @@
                 console.log(fromLang)
                 const toLang = endLanguageSelect.value;
                 const engine = modelSelect.value;
-                
+
                 for (const hitbox of hitboxes) {
                     const text = hitbox.dataset.description.trim();
 
@@ -481,8 +499,8 @@
                         hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
                         flag = false;
                     }
-		        });
-                
+                });
+
                 if (flag) {
                     document.querySelectorAll('.hitbox').forEach(hitbox => {
                         hitbox.dataset.description = hitbox.dataset.original_text;
