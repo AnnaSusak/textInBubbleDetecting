@@ -18,7 +18,7 @@
             </div>
             <div>
                 <select class="select1" name="languages" id="start-language-select">
-                    <option value="en">English</option>
+                    <option value="en" selected>English</option>
                     <option value="ja">Japanese</option>
                     <option value="ru">Russian</option>
                     <option value="zh-CN">Chinese</option>
@@ -30,17 +30,18 @@
                 <select class="select1" name="languages2" id="end-language-select">
                     <option value="en">English</option>
                     <option value="ja">Japanese</option>
-                    <option value="ru">Russian</option>
+                    <option value="ru" selected>Russian</option>
                     <option value="zh-CN">Chinese</option>
                     <option value="ko">Korean</option>
                 </select>
             </div>
             <div><textarea id="translated-text"></textarea></div>
             <div id="translate-refresh">
-                <button class="button" id="translate-button">Перевести</button>
+                <button class="button" id="translate-button">Вставить</button>
                 <img src="static/refresh.png" id="refresh"/>
             </div>
-            <button class="button" onclick="downloadImage()">Скачать</button>
+            <div><button class="button" id="translate-all-button">Перевести все</button></div>
+            <div></div><button class="button" onclick="downloadImage()">Скачать</button></div>
         </div>
         <div id="picture-download" style="position: relative;">
             <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
@@ -100,7 +101,16 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    function rgbToHex(r, g, b) {
+        const toHex = (component) => {
+            const hex = component.toString(16);
+            return hex.length === 1 ? '0' + hex : hex;
+        };
+
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', async function () {
         const bubbles = {{ bubbles|tojson }};
         const originalImage = document.getElementById('original-image');
         const overlaysContainer = document.getElementById('bubble-overlays');
@@ -111,6 +121,7 @@
         const startLanguageSelect = document.getElementById('start-language-select');
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
+        const translateAllButton = document.getElementById('translate-all-button');
         const fontSelect1 = document.getElementById('fonts-select');
         const fontThicknessSelect = document.getElementById('types-select');
         const colorPicker = document.getElementById('colorPicker');
@@ -119,7 +130,7 @@
         const textColorValue = document.getElementById('textColorValue');
 	    const fontSelect = document.getElementById('fontsize-select');
 
-        originalImage.onload = function () {
+        originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
             const containerRect = overlaysContainer.getBoundingClientRect();
             const naturalWidth = originalImage.naturalWidth;
@@ -157,7 +168,7 @@
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
                     
-                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; font-family: ${fontSelect1.value};">${bubble[1]}</div>`;
+                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; color: #000000; font-family: ${fontSelect1.value};">${bubble[1]}</div>`;
                     // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
                     bubbleDiv.appendChild(hitbox);
 
@@ -199,6 +210,17 @@
 
                             fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
+                            
+                            const rgbColor = hitbox.querySelector('.hitbox-text').style.color;
+                            const rgbValues = rgbColor.match(/\d+/g);
+                            const r = parseInt(rgbValues[0]);
+                            const g = parseInt(rgbValues[1]);
+                            const b = parseInt(rgbValues[2]);
+                            const hexColor = rgbToHex(r, g, b);
+
+                            console.log(hexColor);
+                            textColorValue.textContent = hexColor;
+                            textColorPicker.value = hexColor;
 
                             const imgs = hitbox.parentElement.querySelectorAll('img');
                             const canvas = document.createElement('canvas');
@@ -232,15 +254,6 @@
                                     }
                                 };
                             });
-
-                            function rgbToHex(r, g, b) {
-                                const toHex = (component) => {
-                                    const hex = component.toString(16);
-                                    return hex.length === 1 ? '0' + hex : hex;
-                                };
-
-                                return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-                            }
                         }
                     } else {
                         hitbox.dataset.selected = 'false';
@@ -356,6 +369,7 @@
             });
             textColorPicker.addEventListener('input', (event) => {
                 const color = event.target.value;
+                textColorValue.textContent = color;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
                     if (hitbox.dataset.selected === 'true') {
                         hitbox.querySelector('.hitbox-text').style.color = color;
@@ -379,6 +393,36 @@
                     });
             }
             translateButton.addEventListener('click', placeTranslated);
+
+            async function translate_all() {
+                const hitboxes = document.querySelectorAll('.hitbox');
+                const fromLang = startLanguageSelect.value;
+                console.log(fromLang)
+                const toLang = endLanguageSelect.value;
+                const engine = modelSelect.value;
+                
+                for (const hitbox of hitboxes) {
+                    const text = hitbox.dataset.description.trim();
+
+                    const response = await fetch(`/translate?engine=${engine}&from=${fromLang}&to=${toLang}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ text: text })
+                    });
+
+                    const data = await response.json();
+                    hitbox.dataset.description = data.translation;
+                    hitbox.dataset.locale = toLang;
+                    hitbox.querySelector('.hitbox-text').textContent = data.translation;
+
+                    // await new Promise(resolve => setTimeout(resolve, 50));
+                }
+            }
+
+translateAllButton.addEventListener('click', translate_all);
+
         };
 
         if (originalImage.complete) {
