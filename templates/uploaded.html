@@ -38,8 +38,10 @@
             <div><textarea id="translated-text"></textarea></div>
             <div id="translate-refresh">
                 <button class="button" id="translate-button">Вставить</button>
-                <img src="static/refresh.png" id="refresh"/>
-            </div>
+                <button id="refresh-button">
+                    <img src="static/refresh.png" alt="Refresh" />  
+                </button>
+            </div>                     
             <div><button class="button" id="translate-all-button">Перевести все</button></div>
             <div></div><button class="button" onclick="downloadImage()">Скачать</button></div>
         </div>
@@ -51,8 +53,8 @@
             <div>
                 <select name="fonts" id="fonts-select" class="select2">
                     <option value='"Times New Roman"'>Times New Roman</option>
-                    <option value="Arial" selected>Arial</option>
-                    <option value='"Comic Sans MS"' >Comic Sans MS</option>
+                    <option value="Arial"selected>Arial</option>
+                    <option value='"Comic Sans MS"'>Comic Sans MS</option>
                 </select>
             </div>
             <div>
@@ -79,7 +81,7 @@
             </div>
             <div>
             	<input type="color" id="colorPicker">
-            	<span id="colorValue">#000000</span>
+            	<span id="colorValue">#ffffff</span>
             </div>
             <div>
             	<input type="color" id="textColorPicker">
@@ -122,9 +124,11 @@
         const endLanguageSelect = document.getElementById('end-language-select');
         const translateButton = document.getElementById('translate-button');
         const translateAllButton = document.getElementById('translate-all-button');
+        const refreshButton = document.getElementById('refresh-button');
         const fontSelect1 = document.getElementById('fonts-select');
         const fontThicknessSelect = document.getElementById('types-select');
         const colorPicker = document.getElementById('colorPicker');
+        colorPicker.value = '#ffffff';
         const colorValue = document.getElementById('colorValue');
         const textColorPicker = document.getElementById('textColorPicker');
         const textColorValue = document.getElementById('textColorValue');
@@ -167,8 +171,9 @@
                     hitbox.dataset.selected = 'false';
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
+                    hitbox.dataset.original_text = bubble[1];
                     
-                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; color: #000000; font-family: ${fontSelect1.value};">${bubble[1]}</div>`;
+                    hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; color: #000000; font-family: ${fontSelect1.value}; font-weight: ${fontThicknessSelect.value};">${bubble[1]}</div>`;
                     // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
                     bubbleDiv.appendChild(hitbox);
 
@@ -208,6 +213,7 @@
                             hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
                             updateTranslationMenu(hitbox);
 
+                            fontThicknessSelect.value = hitbox.querySelector('.hitbox-text').style.fontWeight;
                             fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
                             
@@ -218,7 +224,6 @@
                             const b = parseInt(rgbValues[2]);
                             const hexColor = rgbToHex(r, g, b);
 
-                            console.log(hexColor);
                             textColorValue.textContent = hexColor;
                             textColorPicker.value = hexColor;
 
@@ -296,26 +301,50 @@
             }
 
             function fontChange() {
+                var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
 		        if (hitbox.dataset.selected === 'true') {
 		            hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
+                    flag = false;
 		        }
+                                
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
+                    });
+                }
 		    });
             }
             function fontChange1() {
+                var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
-		        if (hitbox.dataset.selected === 'true') {
-		            hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
-		        }
-		    });
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
+                        flag = false;
+                    }
+		        });
+                
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.querySelector('.hitbox-text').style.fontFamily = fontSelect1.value;
+                    });
+                }
             }
             function fontThicknessChange() {
                 const fontThicknessSelect = document.getElementById('types-select');
+                var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
                     if (hitbox.dataset.selected === 'true') {
                         hitbox.querySelector('.hitbox-text').style.fontWeight = fontThicknessSelect.value;
+                        flag = false;
                     }
                 });
+
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.querySelector('.hitbox-text').style.fontWeight = fontThicknessSelect.value;
+                    });
+                }
             }
 
             function changeImageColor(img, color) {
@@ -358,23 +387,44 @@
 
             colorPicker.addEventListener('input', (event) => {
                 colorValue.textContent = event.target.value;
+                var flag = true;
                 Array.from(overlaysContainer.children).forEach(child => {
                     const hitbox = child.querySelector('.hitbox');
                     if (hitbox && hitbox.dataset.selected === 'true') {
                         const imgs = child.querySelectorAll('img');
                         const color = event.target.value;
                         imgs.forEach(img => changeImageColor(img, color));
+                        flag = false;
                     }
                 });
+
+                if (flag) {
+                    Array.from(overlaysContainer.children).forEach(child => {
+                        const hitbox = child.querySelector('.hitbox');
+                        if (hitbox) {
+                            const imgs = child.querySelectorAll('img');
+                            const color = event.target.value;
+                            imgs.forEach(img => changeImageColor(img, color));
+                        }
+                    });
+                }
             });
             textColorPicker.addEventListener('input', (event) => {
                 const color = event.target.value;
                 textColorValue.textContent = color;
+                var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
                     if (hitbox.dataset.selected === 'true') {
                         hitbox.querySelector('.hitbox-text').style.color = color;
+                        flag = false;
                     }
                 });
+
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.querySelector('.hitbox-text').style.color = color;
+                    });
+                }
             });
             fontThicknessSelect.addEventListener('change', fontThicknessChange);
             fontSelect.addEventListener('change', fontChange);
@@ -421,8 +471,26 @@
                 }
             }
 
-translateAllButton.addEventListener('click', translate_all);
+            translateAllButton.addEventListener('click', translate_all);
 
+            function refresh() {
+                var flag = true;
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.dataset.description = hitbox.dataset.original_text;
+                        hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                        flag = false;
+                    }
+		        });
+                
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.dataset.description = hitbox.dataset.original_text;
+                        hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                    });
+                }
+            }
+            refreshButton.addEventListener('click', refresh);
         };
 
         if (originalImage.complete) {
