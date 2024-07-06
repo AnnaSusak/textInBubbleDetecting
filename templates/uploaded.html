@@ -72,6 +72,7 @@
         </div>
         <div>
             <select name="fontsize" id="fontsize-select" class="select2">
+                <option value="8">8</option>
                 <option value="10">10</option>
                 <option value="12">12</option>
                 <option value="14">14</option>
@@ -82,6 +83,8 @@
                 <option value="24">24</option>
                 <option value="26">26</option>
                 <option value="28">28</option>
+                <option value="30">30</option>
+                <option value="32">32</option>
             </select>
         </div>
         <div id="switch-container">
@@ -94,16 +97,17 @@
             <div><input type="color" id="colorPicker">
                 <span id="colorValue">#ffffff</span></div>
             <div>
-                <p>Прозрачность: <input type="range" min="1" max="5" id="size"
-                oninput="sizePic()" value="3"></p>
+                <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_reg" value="255"></p>
+            </div>
+            <div>
+                <p>Блюр: <input type="range" min="0" max="50" id="blur_reg" value="20"></p>
             </div>
             <div>
                 <input type="color" id="textColorPicker">
                 <span id="textColorValue">#000000</span>
             </div>
             <div>
-                <p>Прозрачность: <input type="range" min="1" max="5" id="size2"
-                oninput="sizePic()" value="3"></p>
+                <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_text_reg" value="255"></p>
             </div>
         </div>
     </div>
@@ -151,6 +155,9 @@
         const textColorPicker = document.getElementById('textColorPicker');
         const textColorValue = document.getElementById('textColorValue');
         const fontSelect = document.getElementById('fontsize-select');
+        const alphaReg = document.getElementById('alpha_reg');
+        const blurReg = document.getElementById('blur_reg');
+        const alphaTextReg = document.getElementById('alpha_text_reg');
 
         originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
@@ -175,6 +182,9 @@
                     fillImg.style.top = `${(fill[0][1] * scaleY) + (imageRect.top - containerRect.top)}px`;
                     fillImg.style.width = `${(fill[1][0] - fill[0][0]) * scaleX}px`;
                     fillImg.style.height = `${(fill[1][1] - fill[0][1]) * scaleY}px`;
+                    fillImg.style.filter = `blur(0px)`;
+
+                    fillImg.dataset.image_src = '/temp/' + fill[2];
                     bubbleDiv.appendChild(fillImg);
                 });
 
@@ -321,17 +331,17 @@
             function fontChange() {
                 var flag = true;
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
-                if (hitbox.dataset.selected === 'true') {
-                    hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
-                    flag = false;
-                }
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
+                        flag = false;
+                    }
+                });
 
                 if (flag) {
                     document.querySelectorAll('.hitbox').forEach(hitbox => {
                         hitbox.querySelector('.hitbox-text').style.fontSize = fontSelect.value+'px';
                     });
                 }
-            });
             }
             function fontChange1() {
                 var flag = true;
@@ -444,7 +454,80 @@
                     });
                 }
             });
+            function blurChange() {
+                var flag = true;
+                Array.from(overlaysContainer.children).forEach(child => {
+                    const hitbox = child.querySelector('.hitbox');
+                    if (hitbox && hitbox.dataset.selected === 'true') {
+                        const imgs = child.querySelectorAll('img');
+                        const blurValue = blurReg.value;
+                        imgs.forEach(img => {
+                            img.style.filter = `blur(${blurValue}px)`;
+                        });
+                        flag = false;
+                    }
+                });
+
+                if (flag) {
+                    Array.from(overlaysContainer.children).forEach(child => {
+                        const hitbox = child.querySelector('.hitbox');
+                        if (hitbox) {
+                            const imgs = child.querySelectorAll('img');
+                            const blurValue = blurReg.value;
+                            imgs.forEach(img => {
+                                img.style.filter = `blur(${blurValue}px)`;
+                            });
+                        }
+                    });
+                }
+            }
+            function alphaChange() {
+                var flag = true;
+                Array.from(overlaysContainer.children).forEach(child => {
+                    const hitbox = child.querySelector('.hitbox');
+                    if (hitbox && hitbox.dataset.selected === 'true') {
+                        const imgs = child.querySelectorAll('img');
+                        const a = alphaReg.value / 255;
+                        imgs.forEach(img => {
+                            img.style.opacity = a;
+                        });
+                        flag = false;
+                    }
+                });
+
+                if (flag) {
+                    Array.from(overlaysContainer.children).forEach(child => {
+                        const hitbox = child.querySelector('.hitbox');
+                        if (hitbox) {
+                            const imgs = child.querySelectorAll('img');
+                            const a = alphaReg.value / 255;
+                            imgs.forEach(img => {
+                                img.style.opacity = a;
+                            });
+                        }
+                    });
+                }
+            }
+            function alphaTextChange() {
+                var flag = true;
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.querySelector('.hitbox-text').style.opacity = alphaTextReg.value / 255;
+                        flag = false;
+                    }
+                });
+
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.querySelector('.hitbox-text').style.opacity = alphaTextReg.value / 255;
+                    });
+                }
+            }
+
             fontThicknessSelect.addEventListener('change', fontThicknessChange);
+            blurReg.addEventListener('change', blurChange);
+            alphaReg.addEventListener('change', alphaChange);
+            alphaTextReg.addEventListener('change', alphaTextChange);
             fontSelect.addEventListener('change', fontChange);
             fontSelect1.addEventListener('change', fontChange1);
             sourceText.addEventListener('input', translateText);
@@ -493,8 +576,13 @@
 
             function refresh() {
                 var flag = true;
-                document.querySelectorAll('.hitbox').forEach(hitbox => {
-                    if (hitbox.dataset.selected === 'true') {
+                Array.from(overlaysContainer.children).forEach(child => {
+                    const hitbox = child.querySelector('.hitbox');
+                    if (hitbox && hitbox.dataset.selected === 'true') {
+                        const imgs = child.querySelectorAll('img');
+                        imgs.forEach(img => {
+                            img.src = img.dataset.image_src;
+                        });
                         hitbox.dataset.description = hitbox.dataset.original_text;
                         hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
                         flag = false;
@@ -502,9 +590,16 @@
                 });
 
                 if (flag) {
-                    document.querySelectorAll('.hitbox').forEach(hitbox => {
-                        hitbox.dataset.description = hitbox.dataset.original_text;
-                        hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                    Array.from(overlaysContainer.children).forEach(child => {
+                        const hitbox = child.querySelector('.hitbox');
+                        if (hitbox) {
+                            const imgs = child.querySelectorAll('img');
+                            imgs.forEach(img => {
+                                img.src = img.dataset.image_src;
+                            });
+                            hitbox.dataset.description = hitbox.dataset.original_text;
+                            hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                        }
                     });
                 }
             }
