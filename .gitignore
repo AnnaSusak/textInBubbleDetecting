@@ -6,3 +6,5 @@ painted_bubbles
 temp
 luka_api_keys.json
 test
+__pycache__
+.idea
