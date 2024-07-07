@@ -40,8 +40,8 @@ with open('luka_api_keys.json', 'r', encoding='utf-8') as file:
 # project = rf.workspace().project("manwgaspeechbubble")
 # model = project.version(1).model
 rf = Roboflow(api_key=api_keys['roboflow'])
-project = rf.workspace().project("cut_the_bubble")
-model = project.version(1).model
+project = rf.workspace().project("bubble-nd1xn")
+model = project.version(2).model
 
 client = OpenAI(
     api_key=api_keys['chat_gpt']
@@ -82,7 +82,7 @@ def get_average_color(image, x1, y1, x2, y2):
     return np.round(average_color).astype(int)[::-1]
 
 def predicter(path, zalivka_type):
-    result = model.predict(path, confidence=60, overlap=30).json()
+    result = model.predict(path, confidence=60, overlap=70).json()
     predictions = [(pred['x'], pred['y'], pred['width'], pred['height'], pred['confidence']) for pred in
                    result['predictions']]
 
@@ -133,23 +133,35 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    zalivka_type = int(request.args.get('flag'))  
+    if request.form.get('is_load_next'):
+        pages = json.loads(request.form.get('pages'))
+        new_id = int(request.form.get('new_id'))
+        zalivka_type = int(request.form.get('flag'))
+        # проверить тип pages
+        bubbles = predicter(pages[new_id][0], zalivka_type)
+        return render_template('uploaded.html', filename=pages[new_id][1], bubbles=bubbles, self_id=new_id, pages=pages, zalivka_type=zalivka_type)
+
+    zalivka_type = int(request.args.get('flag'))
 
     if 'file' not in request.files:
         return "No file part"
 
-    file = request.files['file']
+    files = request.files.getlist('file')
+    if len(files) == 0 or files[0].filename == '':
+        return "No selected files"
 
-    if file.filename == '':
-        return "No selected file"
+    res = []
+    for file in files:
+        if file and file.filename:
+            filename = secure_filename(file.filename)
+            path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(path)
+            res.append([path, filename])
 
-    if file:
-        filename = secure_filename(file.filename)
-        path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(path)
-        bubbles = predicter(path, zalivka_type)
-        print(bubbles)
-        return render_template('uploaded.html', filename=filename, bubbles=bubbles)
+    path, filename = res[0]
+    bubbles = predicter(path, zalivka_type)
+
+    return render_template('uploaded.html', filename=filename, bubbles=bubbles, self_id=0, pages=res, zalivka_type=zalivka_type)
 
 def create_overlays_for_bubble(image, coordinates, bubble_name, zalivka_type):
     overlay_filenames = []
