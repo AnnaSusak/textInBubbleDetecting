@@ -9,6 +9,7 @@
 <div id="all">
     <div id="menu-and-picture">
         <div class="translation-menu mycontainer">
+
             <div>
                 <select class="select1" name="models" id="model-select">
                     <option value="google_translate">Google переводчик</option>
@@ -55,6 +56,7 @@
              style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
     </div>
     <div class="text-menu mycontainer">
+        <h4>Текст</h4>
         <div>
             <select name="fonts" id="fonts-select" class="select2">
                 <option value='"Times New Roman"'>Times New Roman</option>
@@ -88,6 +90,14 @@
             </select>
         </div>
         <div>
+                <input type="color" id="textColorPicker">
+                <span id="textColorValue">#000000</span>
+            </div>
+            <div>
+                <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_text_reg" value="255"></p>
+            </div>
+        <div>
+            <h4>Обводка</h4>
             <div id="switch-container">
                 <label class="switch">
                     <input type="checkbox" id="checkboxAlightment">
@@ -99,6 +109,7 @@
             </div>
         </div>
         <div>
+            <h4>Фон</h4>
             <div><input type="color" id="colorPicker">
                 <span id="colorValue">#ffffff</span>
             </div>
@@ -108,13 +119,7 @@
             <div>
                 <p>Блюр: <input type="range" min="0" max="50" id="blur_reg" value="20"></p>
             </div>
-            <div>
-                <input type="color" id="textColorPicker">
-                <span id="textColorValue">#000000</span>
-            </div>
-            <div>
-                <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_text_reg" value="255"></p>
-            </div>
+
         </div>
     </div>
 </div>

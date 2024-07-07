@@ -191,7 +191,7 @@ background-color:#67F38E;
 {
   display: none;
 }
-
+h4{margin:0;}
 .switch
 {
   display: inline-block;
@@ -199,7 +199,7 @@ background-color:#67F38E;
   height: 30px; /*=h*/
   transform: translateY(50%);
   position: relative;
-  margin-bottom:5px;
+  margin-bottom:15px;
 }
 
 .slider
@@ -243,7 +243,8 @@ input:checked + .slider
 margin-top:12px;
 }
 #textColorPicker{
-margin:5px;}
+margin:5px;
+margin-bottom:0;}
 
 .input-file {
 	position: relative;
@@ -309,4 +310,11 @@ display: flex;
     justify-content: center;
     position: relative;
 }
-
+#alpha_text_reg {
+margin-top:0;
+}
+#alightmentColorPicker{
+    margin-bottom:5px;
+}
+#alightmentColorPicker{
+margin:3px;}
