@@ -6,11 +6,24 @@
 <body>
 <div id="upload-txt-buttons">
     <h1>Upload an Image</h1>
+    <div id="upload-forms">
+        <form method="post" action="/upload?flag=1" enctype="multipart/form-data" class="button">
+            <label class="input-file">
+                <input type="file" name="file">
+                <span class="input-file-btn">Выберите файл</span>
+                <input type="submit" value="умная заливка" class="button">
+            </label>
+        </form>
 
-    <form action="/upload" method="post" enctype="multipart/form-data" class="button">
-        <input  type="file" name="file" class="button">
-        <input type="submit" value="Upload"  class="button">
-    </form>
+        <form method="post" action="/upload?flag=2" enctype="multipart/form-data" class="button">
+            <label class="input-file">
+                <input type="file" name="file">
+                <span class="input-file-btn">Выберите файл</span>
+                <input type="submit" value="тупая заливка" class="button">
+            </label>
+        </form>
+    </div>
+
 </div>
 
 </body>

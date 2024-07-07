@@ -9,6 +9,8 @@ justify-content:center;
 }
 h1{
 color:white;
+text-align: center; /* Выравнивание текста заголовка по центру */
+    width: 100%;
 }
 #upload-txt-buttons{
     position: absolute;
@@ -243,5 +245,68 @@ margin-top:12px;
 #textColorPicker{
 margin:5px;}
 
+.input-file {
+	position: relative;
+	display: inline-block;
+}
+.input-file-btn {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+	outline: none;
+	text-decoration: none;
+	font-size: 14px;
+	vertical-align: middle;
+	color: black;
+	text-align: center;
+	border-radius: 4px;
+	background-color: #9ACCFB;
+	line-height: 22px;
+	height: 40px;
+	padding: 10px 20px;
+	box-sizing: border-box;
+	border: none;
+	margin: 0;
+	transition: background-color 0.2s;
+}
+.input-file-text {
+	padding: 0 10px;
+	line-height: 40px;
+	display: inline-block;
+}
+.input-file input[type=file] {
+	position: absolute;
+	z-index: -1;
+	opacity: 0;
+	display: block;
+	width: 0;
+	height: 0;
+}
 
+/* Focus */
+.input-file input[type=file]:focus + .input-file-btn {
+	box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* Hover/active */
+.input-file:hover .input-file-btn {
+	background-color: #4B78EC;
+    color:white;
+}
+.input-file:active .input-file-btn {
+	background-color: #4B78EC;
+    color:white;
+}
+
+/* Disabled */
+.input-file input[type=file]:disabled + .input-file-btn {
+	background-color: #eee;
+}
+#upload-forms{
+display: flex;
+    flex-direction: column; /* Добавляем это свойство */
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
 
