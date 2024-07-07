@@ -184,7 +184,7 @@ background-color:#67F38E;
     margin-top:15px;
     margin-left:10px;
 }
-#refresh-button{
+.icon-but{
     
     border-radius: 50%;
     width:25px;
@@ -192,6 +192,17 @@ background-color:#67F38E;
     justify-content: center;
     align-items: center;
 
+}
+.icon-but2{
+
+    border-radius: 50%;
+    width:5px;
+    height:5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left:10px;
+margin-right:10px;
 }
 .switch input
 {
@@ -311,7 +322,7 @@ margin-bottom:0;}
 .input-file input[type=file]:disabled + .input-file-btn {
 	background-color: #eee;
 }
-#upload-forms{
+#upload-forms {
 display: flex;
     flex-direction: column; /* Добавляем это свойство */
     align-items: center;
@@ -326,6 +337,16 @@ margin-top:0;
 }
 #alightmentColorPicker{
 margin:3px;}
+#back-forward {
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+  justify-content: center;
+    }
+#switch-container2 {
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+  justify-content: center;
+    }
 @media (max-width: 670px) {
    #all{
    display: flex;
@@ -369,4 +390,5 @@ display: flex;
     align-items: center;
     justify-content: center;
     }
+
 }

@@ -41,7 +41,7 @@
             <div><textarea id="translated-text"></textarea></div>
             <div id="translate-refresh">
                 <button class="button" id="translate-button">Вставить</button>
-                <button id="refresh-button" class="button">
+                <button id="refresh-button" class="button icon-but">
                     <img src="static/refresh.png" alt="Refresh" id="refresh-picture"/>
                 </button>
             </div>
@@ -50,6 +50,22 @@
             </div>
             <div></div>
             <button class="button" onclick="downloadImage()">Скачать</button>
+            <div id="back-forward">
+                <button class="button icon-but2" id="forw" >
+                    <img src="static/back.png" alt="backward"/>
+                </button>
+                <h2>0</h2>
+                <button class="button icon-but2" id="back">
+                    <img src="static/forw.png" alt="forward"/>
+                </button>
+            </div>
+            <div id="switch-container2">
+                <h4>Умная заливка</h4>
+                <label class="switch">
+                    <input type="checkbox" id="checkboxAlightment2">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
     </div>
     <div id="picture-download" style="position: relative;">
