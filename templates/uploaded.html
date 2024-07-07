@@ -87,15 +87,21 @@
                 <option value="32">32</option>
             </select>
         </div>
-        <div id="switch-container">
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider"></span>
-            </label> обводка текста
+        <div>
+            <div id="switch-container">
+                <label class="switch">
+                    <input type="checkbox" id="checkboxAlightment">
+                    <span class="slider"></span>
+                </label> обводка текста
+            </div>
+            <div><input type="color" id="alightmentColorPicker">
+                <span id="alightmentColorValue">#ffffff</span>
+            </div>
         </div>
         <div>
             <div><input type="color" id="colorPicker">
-                <span id="colorValue">#ffffff</span></div>
+                <span id="colorValue">#ffffff</span>
+            </div>
             <div>
                 <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_reg" value="255"></p>
             </div>
@@ -152,12 +158,15 @@
         const colorPicker = document.getElementById('colorPicker');
         colorPicker.value = '#ffffff';
         const colorValue = document.getElementById('colorValue');
+        const alightmentColorPicker = document.getElementById('alightmentColorPicker');
+        const alightmentColorValue = document.getElementById('alightmentColorValue');
         const textColorPicker = document.getElementById('textColorPicker');
         const textColorValue = document.getElementById('textColorValue');
         const fontSelect = document.getElementById('fontsize-select');
         const alphaReg = document.getElementById('alpha_reg');
         const blurReg = document.getElementById('blur_reg');
         const alphaTextReg = document.getElementById('alpha_text_reg');
+        const switchAlightment = document.getElementById('checkboxAlightment');
 
         originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
@@ -200,6 +209,8 @@
                     hitbox.dataset.locale = bubble[2];
                     hitbox.dataset.description = bubble[1];
                     hitbox.dataset.original_text = bubble[1];
+                    hitbox.dataset.alightment = false;
+                    hitbox.dataset.alightmentColor = "#000000";
 
                     hitbox.innerHTML = `<div class="hitbox-text" style="font-size: ${fontSelect.value}px; color: #000000; font-family: ${fontSelect1.value}; font-weight: ${fontThicknessSelect.value};">${bubble[1]}</div>`;
                     // hitbox.innerHTML = `<div class="hitbox-text">${bubble[1]}</div>`;
@@ -241,6 +252,9 @@
                             hitbox.style.backgroundColor = '#4b9cd3'; // Darker blue
                             updateTranslationMenu(hitbox);
 
+                            switchAlightment.checked = (hitbox.dataset.alightment === 'true');
+                            alightmentColorValue.textContent = hitbox.dataset.alightmentColor;
+                            alightmentColorPicker.value = hitbox.dataset.alightmentColor;
                             fontThicknessSelect.value = hitbox.querySelector('.hitbox-text').style.fontWeight;
                             fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
@@ -437,6 +451,47 @@
                     });
                 }
             });
+            alightmentColorPicker.addEventListener('input', (event) => {
+                const color = event.target.value;
+                alightmentColorValue.textContent = color;
+                var flag = true;
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.dataset.alightmentColor = color;
+                        if (hitbox.dataset.alightment === 'true') {
+                            var shadowStyle = `
+                                -1px -1px 0 ${color},
+                                1px -1px 0 ${color},
+                                -1px  1px 0 ${color},
+                                1px  1px 0 ${color}
+                            `;
+                            hitbox.querySelector('.hitbox-text').style.textShadow = shadowStyle;
+                        }
+                        else {
+                            hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                        }
+                        flag = false;
+                    }
+                });
+
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.dataset.alightmentColor = color;
+                        if (hitbox.dataset.alightment === 'true') {
+                            var shadowStyle = `
+                                -1px -1px 0 ${color},
+                                1px -1px 0 ${color},
+                                -1px  1px 0 ${color},
+                                1px  1px 0 ${color}
+                            `;
+                            hitbox.querySelector('.hitbox-text').style.textShadow = shadowStyle;
+                        }
+                        else {
+                            hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                        }
+                    });
+                }
+            });
             textColorPicker.addEventListener('input', (event) => {
                 const color = event.target.value;
                 textColorValue.textContent = color;
@@ -523,7 +578,50 @@
                     });
                 }
             }
+            function switchAlightmentF() {
+                var flag = true;
+                var switchV = switchAlightment.checked;
+                document.querySelectorAll('.hitbox').forEach(hitbox => {
+                    if (hitbox.dataset.selected === 'true') {
+                        hitbox.dataset.alightment = switchV;
+                        if (switchV) {
+                            const color = hitbox.dataset.alightmentColor
+                            var shadowStyle = `
+                                -1px -1px 0 ${color},
+                                1px -1px 0 ${color},
+                                -1px  1px 0 ${color},
+                                1px  1px 0 ${color}
+                            `;
+                            hitbox.querySelector('.hitbox-text').style.textShadow = shadowStyle;
+                        }
+                        else {
+                            hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                        }
+                        flag = false;
+                    }
+                });
 
+                if (flag) {
+                    document.querySelectorAll('.hitbox').forEach(hitbox => {
+                        hitbox.dataset.alightment = switchV;
+                        if (switchV) {
+                            const color = hitbox.dataset.alightmentColor
+                            var shadowStyle = `
+                                -1px -1px 0 ${color},
+                                1px -1px 0 ${color},
+                                -1px  1px 0 ${color},
+                                1px  1px 0 ${color}
+                            `;
+                            hitbox.querySelector('.hitbox-text').style.textShadow = shadowStyle;
+                        }
+                        else {
+                            hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                        }
+                    });
+                }
+            }
+
+            switchAlightment.addEventListener('change', switchAlightmentF);
             fontThicknessSelect.addEventListener('change', fontThicknessChange);
             blurReg.addEventListener('change', blurChange);
             alphaReg.addEventListener('change', alphaChange);
