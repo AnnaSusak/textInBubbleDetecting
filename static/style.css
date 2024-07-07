@@ -33,11 +33,13 @@ position: relative;
     align-items: center;
     pointer-events: auto;
     cursor: pointer;
+    z-index:3;
 }
 
 .hitbox[data-selected="true"] {
     background-color: #4b9cd3; /* Darker blue */
     border: 2px solid blue;
+    z-index:5;
 }
 
 .hitbox-text {
@@ -50,6 +52,7 @@ position: relative;
     justify-content: center;
     align-items: center;
     padding: 5px;
+    z-index:7;
 }
 
 
@@ -60,7 +63,7 @@ position: relative;
 }
 
 .overlay {
-    position: absolute;
+    position: relative;
     top: 0;
     left: 0;
     pointer-events: none;
@@ -86,9 +89,9 @@ justify-content:left;
 }
 .translation-menu{
 background-color: #6773F7;
- position: fixed;
+position: fixed;
 top: 0;
-z-index: 1000;
+z-index: 100000;
 left:0;
 }
 .up-menu{
@@ -105,6 +108,9 @@ position: fixed;
 top: 0;
 right:0;
 z-index: 1000;
+}
+#menu-show{
+z-index:100000;
 }
 /* Стиль для кнопки */
 .button {
@@ -216,7 +222,9 @@ h4{margin:0;}
   overflow: hidden;
   transition: 0.2s;
 }
-
+#menu-show{
+display: none;
+}
 .slider:before
 {
   position: absolute;
@@ -318,3 +326,47 @@ margin-top:0;
 }
 #alightmentColorPicker{
 margin:3px;}
+@media (max-width: 670px) {
+   #all{
+   display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100vh;
+   }
+   #original-image{
+       width: 100%; /* Ширина изображения будет равна 100% ширины контейнера */
+        height: auto; /* Высота изменится пропорционально */
+        object-fit: contain;
+        z-index:1;
+
+   }
+    #picture-download{
+        width: 100%; /* Ширина изображения будет равна 100% ширины контейнера */
+        height: 100% /* Высота изменится пропорционально */
+        object-fit: contain;
+        background-color:red;
+    }
+    .translation-menu{
+        display: none;
+    }
+    #text-menu-id{
+        display: none;
+    }
+    #menu-show{
+        display: block;
+    }
+    .translation-menu{
+        width:40%;
+    }
+    .text-menu{
+        width:40%;
+    }
+    #translate-refresh{
+display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    }
+}

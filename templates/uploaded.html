@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
     <title>Uploaded Image</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <div id="all">
+
     <div id="menu-and-picture">
-        <div class="translation-menu mycontainer">
+        <div class="translation-menu mycontainer" id="translation-menu-id">
 
             <div>
                 <select class="select1" name="models" id="model-select">
@@ -53,9 +55,14 @@
     <div id="picture-download" style="position: relative;">
         <img src="{{ url_for('send_uploaded_file', filename=filename) }}" alt="Uploaded Image" id="original-image">
         <div id="bubble-overlays"
-             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;"></div>
+             style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6;"></div>
+        <div>
+
     </div>
-    <div class="text-menu mycontainer">
+
+    </div>
+    <button class="button" id="menu-show">Показать меню</button>
+    <div class="text-menu mycontainer" id="text-menu-id">
         <h4>Текст</h4>
         <div>
             <select name="fonts" id="fonts-select" class="select2">
@@ -90,12 +97,12 @@
             </select>
         </div>
         <div>
-                <input type="color" id="textColorPicker">
-                <span id="textColorValue">#000000</span>
-            </div>
-            <div>
-                <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_text_reg" value="255"></p>
-            </div>
+            <input type="color" id="textColorPicker">
+            <span id="textColorValue">#000000</span>
+        </div>
+        <div>
+            <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_text_reg" value="255"></p>
+        </div>
         <div>
             <h4>Обводка</h4>
             <div id="switch-container">
@@ -172,7 +179,7 @@
         const blurReg = document.getElementById('blur_reg');
         const alphaTextReg = document.getElementById('alpha_text_reg');
         const switchAlightment = document.getElementById('checkboxAlightment');
-
+        const menuShowBut = document.getElementById('menu-show');
         originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
             const containerRect = overlaysContainer.getBoundingClientRect();
@@ -236,7 +243,21 @@
 
                 overlaysContainer.appendChild(bubbleDiv);
             });
-
+            menuShowBut.addEventListener('click', (event) => {
+            console.log("1");
+              var x = document.getElementById('translation-menu-id');
+              var y = document.getElementById('text-menu-id');
+              if (x.style.display === "none") {
+                x.style.display = "block";
+              } else {
+                x.style.display = "none";
+              }
+              if (y.style.display === "none") {
+                y.style.display = "block";
+              } else {
+                y.style.display = "none";
+              }
+              });
             document.addEventListener('click', function (event) {
                 const imageRect = originalImage.getBoundingClientRect();
                 if(event.clientX >= imageRect.left && event.clientX <= imageRect.right && event.clientY >= imageRect.top && event.clientY <= imageRect.bottom){
@@ -444,6 +465,7 @@
                         flag = false;
                     }
                 });
+
 
                 if (flag) {
                     Array.from(overlaysContainer.children).forEach(child => {
@@ -712,6 +734,7 @@
         if (originalImage.complete) {
             originalImage.onload();
         }
+
     });
 </script>
 
@@ -752,6 +775,7 @@
         max-width: 100%;
         z-index: 5;
     }
+
 </style>
 </body>
 </html>
