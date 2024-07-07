@@ -9,15 +9,15 @@
     <div id="upload-forms">
         <form method="post" action="/upload?flag=1" enctype="multipart/form-data" class="button">
             <label class="input-file">
-                <input type="file" name="file">
+                <input type="file" name="file" multiple>
                 <span class="input-file-btn">Выберите файл</span>
                 <input type="submit" value="умная заливка" class="button">
             </label>
         </form>
 
-        <form method="post" action="/upload?flag=2" enctype="multipart/form-data" class="button">
+        <form method="post" action="/upload?flag=0" enctype="multipart/form-data" class="button">
             <label class="input-file">
-                <input type="file" name="file">
+                <input type="file" name="file" multiple>
                 <span class="input-file-btn">Выберите файл</span>
                 <input type="submit" value="тупая заливка" class="button">
             </label>
