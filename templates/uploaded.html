@@ -51,18 +51,18 @@
             <div></div>
             <button class="button" onclick="downloadImage()">Скачать</button>
             <div id="back-forward">
-                <button class="button icon-but2" id="forw" >
+                <button class="button icon-but2" id="back" >
                     <img src="static/back.png" alt="backward"/>
                 </button>
-                <h2>0</h2>
-                <button class="button icon-but2" id="back">
+                <h2 id="self_id_text">0</h2>
+                <button class="button icon-but2" id="forw">
                     <img src="static/forw.png" alt="forward"/>
                 </button>
             </div>
             <div id="switch-container2">
                 <h4>Умная заливка</h4>
                 <label class="switch">
-                    <input type="checkbox" id="checkboxAlightment2">
+                    <input type="checkbox" id="checkboxSmartZalivka">
                     <span class="slider"></span>
                 </label>
             </div>
@@ -169,7 +169,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', async function () {
-        const bubbles = {{ bubbles|tojson }};
+        const pages = {{ pages | safe }};
+        const bubbles = {{ bubbles | tojson }};
+        const selfId = {{ self_id }};
+        const zalivkaType = {{ zalivka_type }};
+
         const originalImage = document.getElementById('original-image');
         const overlaysContainer = document.getElementById('bubble-overlays');
 
@@ -196,6 +200,14 @@
         const alphaTextReg = document.getElementById('alpha_text_reg');
         const switchAlightment = document.getElementById('checkboxAlightment');
         const menuShowBut = document.getElementById('menu-show');
+
+        const backButton = document.getElementById('back');
+        const forwButton = document.getElementById('forw');
+        const checkboxSmartZalivka = document.getElementById('checkboxSmartZalivka');
+        checkboxSmartZalivka.checked = (zalivkaType == 1);
+        const selfIdText = document.getElementById('self_id_text');
+        selfIdText.textContent = selfId + 1;
+
         originalImage.onload = async function () {
             const imageRect = originalImage.getBoundingClientRect();
             const containerRect = overlaysContainer.getBoundingClientRect();
@@ -712,8 +724,63 @@
                     // await new Promise(resolve => setTimeout(resolve, 50));
                 }
             }
-
             translateAllButton.addEventListener('click', translate_all);
+
+            function stringifyParam(param) {
+                if (typeof param === 'number') {
+                    return param.toString(); // Преобразование int в строку
+                } else if (typeof param === 'object') {
+                    return JSON.stringify(param); // Преобразование объектов и массивов в JSON строку
+                } else {
+                    return param; // Для строк и других типов данных
+                }
+            }
+
+            function postToUrl(path, params, method='POST') {
+                const form = document.createElement('form');
+                form.method = method;
+                form.action = path;
+                
+                for (const key in params) {
+                    if (params.hasOwnProperty(key)) {
+                        const hiddenField = document.createElement('input');
+                        hiddenField.type = 'hidden';
+                        hiddenField.name = key;
+                        hiddenField.value = stringifyParam(params[key]); // Преобразование параметров
+                        form.appendChild(hiddenField);
+                    }
+                }
+                console.log(form)
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            function goTo(new_id) {
+                const params = {
+                    is_load_next: '1',
+                    pages: pages,
+                    new_id: new_id,
+                    flag: checkboxSmartZalivka.checked ? 1 : 0
+                };
+                postToUrl('/upload', params);
+            }
+            
+            function back() {
+                if (selfId == 0) {
+                    goTo(Object.keys(pages).length-1);
+                    return;
+                }
+                goTo(selfId-1);
+            }
+            function forw() {
+                if (selfId == Object.keys(pages).length - 1) {
+                    goTo(0);
+                    return;
+                }
+                goTo(selfId+1);
+            }
+            backButton.addEventListener('click', back);
+            forwButton.addEventListener('click', forw);
 
             function refresh() {
                 var flag = true;
