@@ -54,6 +54,11 @@ data = {
 
 yandex_token = 'Bearer ' + requests.post(url, json=data).json()['iamToken']
 
+GOOGLE_SYMBOL_CODES = {
+    '&#39;' : "'",
+    '&quot;' : '"'
+}
+
 
 def get_average_color(image, x1, y1, x2, y2):
     height, width, _ = image.shape
@@ -76,7 +81,7 @@ def get_average_color(image, x1, y1, x2, y2):
     
     return np.round(average_color).astype(int)[::-1]
 
-def predicter(path):
+def predicter(path, zalivka_type):
     result = model.predict(path, confidence=60, overlap=30).json()
     predictions = [(pred['x'], pred['y'], pred['width'], pred['height'], pred['confidence']) for pred in
                    result['predictions']]
@@ -101,23 +106,24 @@ def predicter(path):
     while None in results:
         results.remove(None)
 
-    mask_cords = [res[3] for res in results]
-    
-    height, width = image.shape[:2]
-    mask = np.zeros((height, width), dtype=np.uint8)
-    for (x1, y1), (x2, y2) in mask_cords:
-        cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1)
-    output_image = cv2.inpaint(image, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
+    if zalivka_type == 1:
+        mask_cords = [res[3] for res in results]
+        height, width = image.shape[:2]
+        mask = np.zeros((height, width), dtype=np.uint8)
+        for (x1, y1), (x2, y2) in mask_cords:
+            cv2.rectangle(mask, (x1, y1), (x2, y2), 255, -1)
+        image = cv2.inpaint(image, mask, inpaintRadius=3, flags=cv2.INPAINT_TELEA)
 
     for i, result in enumerate(results):
-        print("RESULT", result)
-        # result = [[result[3]], result[1], result[2], result[3]]
-        bubble_info = create_overlays_for_bubble(output_image, [result[3]], str(i))
-        # for j, coord in enumerate(result[0]):
-        #     coord.append(bubble_info[j]['filename'])
-        #     result[0][j] = coord
-        # print(result)
-        result = ([[result[3][0], result[3][1], bubble_info[0]['filename']]], result[1], result[2], result[3])
+        if zalivka_type == 1:
+            bubble_info = create_overlays_for_bubble(image, [result[3]], str(i), zalivka_type)
+            result = ([[result[3][0], result[3][1], bubble_info[0]['filename']]], result[1], result[2], result[3])
+        else:
+            bubble_info = create_overlays_for_bubble(image, result[0], str(i), zalivka_type)
+            for j, coord in enumerate(result[0]):
+                coord.append(bubble_info[j]['filename'])
+                result[0][j] = coord
+
         results[i] = result
     return results
 
@@ -127,6 +133,8 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    zalivka_type = int(request.args.get('flag'))  
+
     if 'file' not in request.files:
         return "No file part"
 
@@ -139,50 +147,30 @@ def upload():
         filename = secure_filename(file.filename)
         path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(path)
-        bubbles = predicter(path)
+        bubbles = predicter(path, zalivka_type)
         print(bubbles)
         return render_template('uploaded.html', filename=filename, bubbles=bubbles)
 
-def create_overlays_for_bubble(image, coordinates, bubble_name):
+def create_overlays_for_bubble(image, coordinates, bubble_name, zalivka_type):
     overlay_filenames = []
 
     if not os.path.exists(app.config['TEMP_FOLDER']):
         os.makedirs(app.config['TEMP_FOLDER'])
 
     for i, coords in enumerate(coordinates):
-        print(coords)
         coords = [(int(x), int(y)) for (x, y) in coords]
 
-        # Вырезка части изображения по координатам
-        x1, y1 = coords[0]
-        x2, y2 = coords[1]
-        crop_img = image[y1:y2, x1:x2]
-
-        overlay = Image.fromarray(cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGBA))
+        if zalivka_type == 1:
+            overlay = Image.fromarray(cv2.cvtColor(image[coords[0][1]:coords[1][1], coords[0][0]:coords[1][0]], cv2.COLOR_BGR2RGBA))
+        else:
+            overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (*get_average_color(image, coords[0][0], coords[0][1], coords[1][0], coords[1][1]), 255))
+        
         overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
         overlay.save(overlay_path)
         overlay_filenames.append({'filename': overlay_filename, 'coords': coords})
 
     return overlay_filenames
-
-# def create_overlays_for_bubble(image, coordinates, bubble_name):
-#     overlay_filenames = []
-
-#     if not os.path.exists(app.config['TEMP_FOLDER']):
-#         os.makedirs(app.config['TEMP_FOLDER'])
-
-#     for i, coords in enumerate(coordinates):
-#         print(coords)
-#         coords = [(int(x), int(y)) for (x, y) in coords]
-        
-#         overlay = Image.new('RGBA', (coords[1][0] - coords[0][0], coords[1][1] - coords[0][1]), (*get_average_color(image, coords[0][0], coords[0][1], coords[1][0], coords[1][1]), 0))
-#         overlay_filename = f"{os.path.splitext(bubble_name)[0]}_overlay_{i}.png"
-#         overlay_path = os.path.join(app.config['TEMP_FOLDER'], overlay_filename)
-#         overlay.save(overlay_path)
-#         overlay_filenames.append({'filename': overlay_filename, 'coords': coords})
-
-#     return overlay_filenames
 
 @app.route('/uploads/<filename>')
 def send_uploaded_file(filename):
@@ -225,7 +213,10 @@ def translate():
         
     if engine == 'google_translate':
         result = translate_client.translate(text, source_language=from_lang, target_language=to_lang)
-        return jsonify({'translation': result['translatedText']})
+        return_val = result['translatedText']
+        for key in GOOGLE_SYMBOL_CODES.keys():
+            return_val = return_val.replace(key, GOOGLE_SYMBOL_CODES[key])
+        return jsonify({'translation': return_val})
 
     if engine == 'yandex_translate':
         body = {
