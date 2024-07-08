@@ -137,7 +137,7 @@ def upload():
         pages = json.loads(request.form.get('pages'))
         new_id = int(request.form.get('new_id'))
         zalivka_type = int(request.form.get('flag'))
-        # проверить тип pages
+        
         bubbles = predicter(pages[new_id][0], zalivka_type)
         return render_template('uploaded.html', filename=pages[new_id][1], bubbles=bubbles, self_id=new_id, pages=pages, zalivka_type=zalivka_type)
 
@@ -169,6 +169,7 @@ def create_overlays_for_bubble(image, coordinates, bubble_name, zalivka_type):
     if not os.path.exists(app.config['TEMP_FOLDER']):
         os.makedirs(app.config['TEMP_FOLDER'])
 
+    print(coordinates)
     for i, coords in enumerate(coordinates):
         coords = [(int(x), int(y)) for (x, y) in coords]
 
