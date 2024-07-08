@@ -4,7 +4,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <head>
     <title>Uploaded Image</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <div id="all">
@@ -147,16 +146,21 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
 <script>
     function downloadImage() {
         const element = document.getElementById('picture-download');
 
-        html2canvas(element).then(canvas => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'screenshot.png';
-            link.click();
-        });
+        domtoimage.toPng(element)
+            .then(function(dataUrl) {
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = 'screenshot.png';
+                link.click();
+            })
+            .catch(function(error) {
+                console.error('Ошибка при создании изображения:', error);
+            });
     }
 
     function rgbToHex(r, g, b) {
