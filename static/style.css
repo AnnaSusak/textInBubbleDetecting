@@ -275,7 +275,7 @@ margin-bottom:0;}
 	cursor: pointer;
 	outline: none;
 	text-decoration: none;
-	font-size: 14px;
+	font-size: 36px;
 	vertical-align: middle;
 	color: black;
 	text-align: center;
@@ -288,6 +288,9 @@ margin-bottom:0;}
 	border: none;
 	margin: 0;
 	transition: background-color 0.2s;
+}
+.submit-btn{
+font-size:38px;
 }
 .input-file-text {
 	padding: 0 10px;
@@ -335,6 +338,7 @@ margin-top:0;
 #alightmentColorPicker{
     margin-bottom:5px;
 }
+
 #alightmentColorPicker{
 margin:3px;}
 #back-forward {
@@ -346,6 +350,10 @@ margin:3px;}
     display: flex;
     align-items: center; /* Центрируем элементы по вертикали */
   justify-content: center;
+    }
+    .input-file-btn {
+        width: 300px;
+        font-size: 34px;
     }
 @media (max-width: 670px) {
    #all{
@@ -367,7 +375,6 @@ margin:3px;}
         width: 100%; /* Ширина изображения будет равна 100% ширины контейнера */
         height: 100% /* Высота изменится пропорционально */
         object-fit: contain;
-        background-color:red;
     }
     .translation-menu{
         display: none;

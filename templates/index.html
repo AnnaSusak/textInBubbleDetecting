@@ -7,19 +7,19 @@
 <div id="upload-txt-buttons">
     <h1>Upload an Image</h1>
     <div id="upload-forms">
-        <form method="post" action="/upload?flag=1" enctype="multipart/form-data" class="button">
+        <form method="post" action="/upload?flag=1" enctype="multipart/form-data" class="button" id="f1">
             <label class="input-file">
                 <input type="file" name="file" multiple>
                 <span class="input-file-btn">Выберите файл</span>
-                <input type="submit" value="умная заливка" class="button">
+                <input type="submit" value="умная заливка" class="button submit-btn">
             </label>
         </form>
 
-        <form method="post" action="/upload?flag=0" enctype="multipart/form-data" class="button">
+        <form method="post" action="/upload?flag=0" enctype="multipart/form-data" class="button" id="f2">
             <label class="input-file">
                 <input type="file" name="file" multiple>
                 <span class="input-file-btn">Выберите файл</span>
-                <input type="submit" value="тупая заливка" class="button">
+                <input type="submit" value="тупая заливка" class="button submit-btn">
             </label>
         </form>
     </div>
