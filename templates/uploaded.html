@@ -140,7 +140,7 @@
                 <p>Прозрачность: <input type="range" min="0" max="255" id="alpha_reg" value="255"></p>
             </div>
             <div>
-                <p>Блюр: <input type="range" min="0" max="50" id="blur_reg" value="20"></p>
+                <p>Блюр: <input type="range" min="0" max="50" id="blur_reg" value="0"></p>
             </div>
 
         </div>
@@ -293,6 +293,7 @@
 
                 document.querySelectorAll('.hitbox').forEach(hitbox => {
                     if (hitbox.contains(event.target)) {
+                        console.log(hitbox.dataset.selected)
                         hitboxClicked = true;
                         if (hitbox.dataset.selected === 'true') {
                             hitbox.dataset.selected = 'false';
@@ -314,14 +315,20 @@
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
 
                             const rgbColor = hitbox.querySelector('.hitbox-text').style.color;
-                            const rgbValues = rgbColor.match(/\d+/g);
-                            const r = parseInt(rgbValues[0]);
-                            const g = parseInt(rgbValues[1]);
-                            const b = parseInt(rgbValues[2]);
-                            const hexColor = rgbToHex(r, g, b);
-
-                            textColorValue.textContent = hexColor;
-                            textColorPicker.value = hexColor;
+                            if (rgbColor) {
+                                const rgbValues = rgbColor.match(/\d+/g);
+                                const r = parseInt(rgbValues[0]);
+                                const g = parseInt(rgbValues[1]);
+                                const b = parseInt(rgbValues[2]);
+                                const hexColor = rgbToHex(r, g, b);
+                                textColorValue.textContent = hexColor;
+                                textColorPicker.value = hexColor;
+                            }
+                            else {
+                                const hexColor = rgbToHex(0, 0, 0);
+                                textColorValue.textContent = hexColor;
+                                textColorPicker.value = hexColor;
+                            }
 
                             const imgs = hitbox.parentElement.querySelectorAll('img');
                             const canvas = document.createElement('canvas');
@@ -804,9 +811,21 @@
                             const imgs = child.querySelectorAll('img');
                             imgs.forEach(img => {
                                 img.src = img.dataset.image_src;
+                                img.style.filter = `blur(0px)`;
+                                img.style.removeProperty('opacity');
                             });
                             hitbox.dataset.description = hitbox.dataset.original_text;
+                            hitbox.dataset.alightment = false;
+                            hitbox.dataset.alightmentColor = "#000000";
+
                             hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                            hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                            hitbox.querySelector('.hitbox-text').style.removeProperty('opacity');
+                            
+                            hitbox.querySelector('.hitbox-text').style.color = '#000000';
+                            hitbox.querySelector('.hitbox-text').style.fontSize = 16+'px';
+                            hitbox.querySelector('.hitbox-text').style.fontFamily = 'Arial';
+                            hitbox.querySelector('.hitbox-text').style.fontWeight = 'normal';
                         }
                     });
                 }
