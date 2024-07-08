@@ -285,8 +285,11 @@
               } else {
                 y.style.display = "none";
               }
-              });
+              }); 
             document.addEventListener('click', function (event) {
+                if (event.target.closest('#picture-download') == null) {
+                    return;
+                }
                 const imageRect = originalImage.getBoundingClientRect();
                 if(event.clientX >= imageRect.left && event.clientX <= imageRect.right && event.clientY >= imageRect.top && event.clientY <= imageRect.bottom){
                 let hitboxClicked = false;
