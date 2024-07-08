@@ -6,7 +6,7 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 from roboflow import Roboflow
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'lithe-willow-428116-r5-8fb0a06a023f.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'google_api.json'
 rf = Roboflow(api_key="hlfVQnRCETvjVCNGVJoh")
 project = rf.workspace().project("bubble-text-detector")
 model = project.version(3).model
