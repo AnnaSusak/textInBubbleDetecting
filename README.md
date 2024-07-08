@@ -30,7 +30,7 @@ We're using:
 
 ## How to start
 How we've said earlier, we use API of ChatGPT, Roboflow, Yandex and ChatGPT. To set up our code on your device you need to upload 2 files.
-First file - [ЗАТЫЧКА], with this setup:
+First file - **api_keys.json**, with this setup:
 ```
 {
   "chat_gpt": "-",
@@ -40,7 +40,7 @@ First file - [ЗАТЫЧКА], with this setup:
 #Instead of "-" use your own keys
 ```
 
-Also, you need to use other file with Google API and name it [ЗАТЫЧКА]. How to do that you can learn from [this website](https://developers.google.com/maps/documentation/javascript/get-api-key?hl=en)
+Also, you need to use other file with Google API and name it **google_api.json**. How to do that you can learn from [this website](https://developers.google.com/maps/documentation/javascript/get-api-key?hl=en)
 
 
 ## Why this project works
