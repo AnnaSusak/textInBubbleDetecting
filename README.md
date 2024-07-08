@@ -22,7 +22,7 @@ pip install -r requirements.txt
 We're using:
 1) **Roboflow**
    * [Self-made dataset](https://universe.roboflow.com/nekkon/bubble-text-detector/model/3) of bubbles from manga in 5 languages(English, Japanese, Chinese, Korean and Russian) for text scan in the bubble
-   * [Self made dataset] **ЗАТЫЧКА ПОФИКСИТЬ**
+   * [Self made dataset](https://universe.roboflow.com/rely/bubble-nd1xn/model/2) of manga/webtoon images with splitted bubbles.
 2) **ChatGPT 3.5 API** for translation
 3) **Google API** for translation
 4) **Yandex translate API** for translation
