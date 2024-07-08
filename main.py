@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['BUBBLES_FOLDER'] = 'bubbles'
 app.config['TEMP_FOLDER'] = 'temp'
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'lithe-willow-428116-r5-8fb0a06a023f.json'
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r'google_api.json'
 # Ensure the upload and bubbles directories exist
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -32,7 +32,7 @@ if not os.path.exists(app.config['TEMP_FOLDER']):
     os.makedirs(app.config['TEMP_FOLDER'])
 
 
-with open('luka_api_keys.json', 'r', encoding='utf-8') as file:
+with open('api_keys.json', 'r', encoding='utf-8') as file:
     api_keys = json.load(file)
 
 # Initialize Roboflow model
