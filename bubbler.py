@@ -27,7 +27,7 @@ async def process_bubble(bubble, a):
     temp_path = 'temp/temp.jpg'
     with open(temp_path, 'wb') as f:
         f.write(content)
-    polygon = [[(a[0] + int(i['x']) - i['width'] // 2, a[1] + int(i['y']) - i['height'] // 2), (a[0] + int(i['x']) + i['width'] // 2, a[1] + int(i['y']) + i['height'] // 2 )] for i in model.predict(temp_path, confidence=75, overlap=30).json()['predictions']]
+    polygon = [[(a[0] + int(i['x']) - i['width'] // 2, a[1] + int(i['y']) - i['height'] // 2), (a[0] + int(i['x']) + i['width'] // 2, a[1] + int(i['y']) + i['height'] // 2 )] for i in model.predict(temp_path, confidence=80, overlap=30).json()['predictions']]
     # Создание объекта Image для Google Vision API
     image = vision.Image(content=content)
 
