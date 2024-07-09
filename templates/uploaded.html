@@ -321,6 +321,8 @@
                             fontSelect1.value = hitbox.querySelector('.hitbox-text').style.fontFamily;
                             fontSelect.value = hitbox.querySelector('.hitbox-text').style.fontSize.slice(0, -2);
 
+                            alphaTextReg.value = hitbox.querySelector('.hitbox-text').style.opacity * 255;
+
                             const rgbColor = hitbox.querySelector('.hitbox-text').style.color;
                             if (rgbColor) {
                                 const rgbValues = rgbColor.match(/\d+/g);
@@ -344,6 +346,9 @@
                             let totalR = 0, totalG = 0, totalB = 0;
 
                             imgs.forEach((img, index) => {
+                                blurReg.value = img.style.filter.match(/blur\((\d+\.?\d*)px\)/)[1];
+                                alphaReg.value = img.style.opacity * 255;
+
                                 const image = new Image();
                                 image.src = img.src;
                                 image.crossOrigin = "Anonymous"; // To avoid cross-origin issues
@@ -804,9 +809,21 @@
                         const imgs = child.querySelectorAll('img');
                         imgs.forEach(img => {
                             img.src = img.dataset.image_src;
+                            img.style.filter = `blur(0px)`;
+                            img.style.removeProperty('opacity');
                         });
                         hitbox.dataset.description = hitbox.dataset.original_text;
+                        hitbox.dataset.alightment = false;
+                        hitbox.dataset.alightmentColor = "#000000";
+
                         hitbox.querySelector('.hitbox-text').textContent = hitbox.dataset.original_text;
+                        hitbox.querySelector('.hitbox-text').style.textShadow = '';
+                        hitbox.querySelector('.hitbox-text').style.removeProperty('opacity');
+                        
+                        hitbox.querySelector('.hitbox-text').style.color = '#000000';
+                        hitbox.querySelector('.hitbox-text').style.fontSize = 16+'px';
+                        hitbox.querySelector('.hitbox-text').style.fontFamily = 'Arial';
+                        hitbox.querySelector('.hitbox-text').style.fontWeight = 'normal';
                         flag = false;
                     }
                 });
