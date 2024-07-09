@@ -39,7 +39,9 @@ async def process_bubble(bubble, a):
         return None
     text_annotation = response.text_annotations[0]
     description = text_annotation.description
-    vertices = text_annotation.bounding_poly.vertices
+
+    if not polygon:
+        return None
 
     minx, miny, maxx, maxy = int(min([p[0][0] for p in polygon])), int(min([p[0][1] for p in polygon])), int(max([p[1][0] for p in polygon])), int(max([p[1][1] for p in polygon]))
     polygon2 = [(minx + 0, miny + 0), (maxx + 0, maxy + 0)]
