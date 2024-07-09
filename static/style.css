@@ -253,7 +253,9 @@ input:checked + .slider:before
   transform: translateX(30px); /*translateX(w-h)*/
   background-color: #004953;
 }
-
+.switch{
+margin-right:3px;
+}
 input:checked + .slider
 {
   box-shadow: 0 0 0 2px #004953, 0 0 8px #004953;
@@ -316,6 +318,15 @@ font-size:38px;
 	background-color: #4B78EC;
     color:white;
 }
+h4{
+margin:4px;
+}
+#outline{
+margin-top:13px;
+margin-right:5px;
+}
+#clever{
+margin-top:19px;}
 .input-file:active .input-file-btn {
 	background-color: #4B78EC;
     color:white;
@@ -347,6 +358,11 @@ margin:3px;}
   justify-content: center;
     }
 #switch-container2 {
+    display: flex;
+    align-items: center; /* Центрируем элементы по вертикали */
+  justify-content: center;
+    }
+    #switch-container{
     display: flex;
     align-items: center; /* Центрируем элементы по вертикали */
   justify-content: center;
